@@ -1,0 +1,61 @@
+{
+  "analyzed_source_revision": "8c48c711e29f8f8fe8db633ee065ea4dd8e78081",
+  "analyzed_source_tree": "c2324d38fa6caaa5e05cc7c702067b93c6bfdc9f",
+  "api_sha256": "7811c3f916f1d340ae435a0d758b4fc3658d591f90ce7fced8c6907f3afb9117",
+  "docgen_revision": "97d4ecdfc8e09e7f511724c25e303d448de6a3db",
+  "format": 1,
+  "generator": "scripts/generate_api.py",
+  "inputs": {
+    "PolynomialRootStability.lean": "b57d287c62e1ac0b7cf4ff8afb4078876abed14d6cf3407a288a468017a6bb67",
+    "PolynomialRootStability/Krasner.lean": "b96e20b42fcd28dc238eb45f3f6fe145a69ddad12fbef40ba95d3a8defcc9854",
+    "PolynomialRootStability/Normalization.lean": "2400a99caa0019de6834e848f6cf55f84efddc919d9ba2dcf93ee968525ad421",
+    "PolynomialRootStabilityTest/Krasner.lean": "d73f1797dacc82b88f6500639c884d9bf0c6a2182dfaada6d03514a266078a63",
+    "PolynomialRootStabilityTest/Normalization.lean": "73cf12efefc974c22969d8570f22d40a04197275fcdd454b2996a77185031218",
+    "lake-manifest.json": "b2e6a11ce14954af0eb88b270acc06a3dea36236ed1e8b92cf8a0ed1e5ba0c85",
+    "lakefile.toml": "dc91923a50fbe38a213c78cb54582f3a6eacf4a08fbd2a4b82e231f25a8ecc81",
+    "lean-toolchain": "8190e75a201741065fe508b28955dd64dd72d090babe5f70ce6848879d68ae88"
+  },
+  "modules": [
+    "PolynomialRootStability.Krasner",
+    "PolynomialRootStability.Normalization",
+    "PolynomialRootStability",
+    "PolynomialRootStabilityTest.Krasner",
+    "PolynomialRootStabilityTest.Normalization"
+  ],
+  "native_record_sha256": {
+    "PolynomialRootStability": "eb8d58697b1317df8e00f83df2f8e0b0c7e0f0e3e42aa4cbef822baf7eb959a2",
+    "PolynomialRootStability.Krasner": "e4e712c6f09b4b7d7ebd8846bed9f2afc555a2314d0c5bee061d6f0f594e2710",
+    "PolynomialRootStability.Normalization": "8a16c1a19be1b713dff2ec49b2cd9d50ec5b3ec2ad7cc10b5b8fd214e4316ccd",
+    "PolynomialRootStabilityTest.Krasner": "ac2ed2e60fe0f56ed6f1e655e59515b45292f72b4a29029d300f489575191c77",
+    "PolynomialRootStabilityTest.Normalization": "6020795158e24ea8a99e53fe82761c53095a9a151b54e3586912e596090baeb7"
+  },
+  "production_declarations": [
+    "IsKrasner.exists_pos_adjoin_rootSet_eq_of_monic_separable",
+    "IsKrasner.exists_pos_adjoin_rootSet_le_of_monic_separable",
+    "IsKrasner.adjoin_rootSet_eq_of_norm_coeff_sub_lt",
+    "IsKrasner.adjoin_rootSet_le_adjoin_rootSet_of_norm_coeff_sub_lt",
+    "IsKrasner.separable_of_norm_coeff_sub_lt",
+    "IsKrasner.exists_pos_two_add_root_continuity_bounds_lt_of_monic",
+    "IsKrasner.exists_pos_root_continuity_bound_lt_of_monic",
+    "IsKrasner.exists_pos_le_norm_sub_of_distinct_roots",
+    "IsKrasner.exists_pos_le_norm_sub_of_isConjRoot",
+    "IsKrasner.adjoin_rootSet_le_adjoin_rootSet_of_forall_exists_close",
+    "IsKrasner.adjoin_le_adjoin_of_forall_exists_close",
+    "IsKrasner.exists_pos_adjoin_rootSet_eq_of_separable",
+    "Polynomial.exists_pos_norm_mul_leadingCoeff_inv_coeff_sub_lt",
+    "IsKrasner.exists_pos_adjoin_rootSet_eq_of_separable_normalized"
+  ],
+  "proof_certification": false,
+  "public_client_declarations": [
+    "PolynomialRootStabilityTest.direct_monic_stability",
+    "PolynomialRootStabilityTest.direct_distinct_root_separation",
+    "PolynomialRootStabilityTest.padic_nonmonic_linear_stability",
+    "PolynomialRootStabilityTest.padic_constant_rootSet_empty",
+    "PolynomialRootStabilityTest.padic_constant_stability",
+    "PolynomialRootStabilityTest.rational_constant_normalization",
+    "PolynomialRootStabilityTest.aggregate_scalar_normalized_invariance",
+    "PolynomialRootStabilityTest.aggregate_normalized_stability",
+    "PolynomialRootStabilityTest.aggregate_ordinary_stability"
+  ],
+  "release_acceptance": false
+}

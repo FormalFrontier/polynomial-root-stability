@@ -1,0 +1,101 @@
+version: "v0.4"
+
+project:
+  name: Polynomial Root Stability
+  description: >-
+    Fixed-degree stability of polynomial root-generated intermediate fields
+    inside a common Krasner normed extension, including monic, normalized,
+    and ordinary-coefficient versions with derived nearby separability.
+  authors:
+    - Formal Frontier Agents
+  license: Apache-2.0
+
+sources:
+  - title: Fixed-ambient-field root-generated-field stability
+    type: original-proof
+    relationship: other
+    note: >-
+      The precise fixed-IsKrasner formulation and its proof were developed
+      within the Formal Frontier project, first as source-side research and
+      then as a reviewed reusable library; no novelty for Krasner's lemma
+      or the motivating source theorem is asserted.
+  - title: Cohomology of Number Fields, corrected second edition 2.3
+    authors:
+      - Jürgen Neukirch
+      - Alexander Schmidt
+      - Kay Wingberg
+    id: "ISBN 978-3-540-37888-0"
+    type: book
+    location: "Section 12.1.1; corrected edition 2.3, May 2020"
+    relationship: background
+    note: >-
+      Mathematical motivation, not an accepted statement-by-statement
+      correspondence or a claim that section 12.1.1 is fully formalized.
+
+status:
+  scope: >-
+    Nonzero separable reference and same-degree splitting comparison
+    polynomials in one IsKrasner normed extension; real/complex variants,
+    varying degrees and canonical splitting-field objects excluded.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+  main_results:
+    - declaration: IsKrasner.exists_pos_adjoin_rootSet_eq_of_monic_separable
+      file: PolynomialRootStability/Krasner.lean
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+    - declaration: IsKrasner.exists_pos_adjoin_rootSet_eq_of_separable_normalized
+      file: PolynomialRootStability/Normalization.lean
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+    - declaration: IsKrasner.exists_pos_adjoin_rootSet_eq_of_separable
+      file: PolynomialRootStability/Normalization.lean
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+
+automation:
+  methods:
+    - method: agent
+      framework: Codex CLI and Hive Tasks
+      tool_setup: >-
+        Agent-assisted proof development, module migration and examples;
+        pinned Lean and mathlib compilation and independent review of
+        the previous mathematical development.
+  notes: >-
+    Automated assistance is not a substitute for proof-term validation,
+    mathematical review or source-correspondence review.
+
+fidelity:
+  divergences: >-
+    Fixed Krasner normed extension with explicit splitting hypotheses,
+    same natDegree and equality of root-generated intermediate fields;
+    no equivalence of canonical splitting-field objects and no
+    real/complex-variant source correspondence claim.
+
+review:
+  status: agent-reviewed
+  reviewers:
+    - Prism (prior monic mathematical development)
+    - Lattice (prior ordinary/nonmonic mathematical development)
+    - Formalization Worker A (independent module and native-documentation reviews)
+  notes: >-
+    Prior substantive mathematical reviews approved development PRs 2 and 4.
+    Independent development reviews also covered the module migration,
+    named clients, metadata and rights analysis in PR 6, and the complete
+    native API documentation artifact in PR 7. The whole-artifact PR 8
+    review also checked source-only and parentless documentation reproduction
+    and reassessed the unchanged mathematical, proof and rights evidence.
+    These are development-artifact assessments, distinct from revision-specific
+    release acceptance and publication. Each release record identifies its
+    exact commit and tree, applicable independent artifact and history review,
+    verification and rights evidence, and verified publication outcome.
+    Changed artifacts and public histories require their own applicable review;
+    this metadata does not by itself establish a release or source coverage.
+
+acknowledgements: >-
+  Reuses pinned mathlib's Krasner and continuity-of-roots infrastructure;
+  source material is not bundled.
