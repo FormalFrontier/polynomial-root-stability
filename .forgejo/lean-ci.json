@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "mode": "strict",
+  "projects": [
+    {
+      "path": ".",
+      "targets": [
+        "PolynomialRootStability",
+        "PolynomialRootStabilityTest"
+      ]
+    }
+  ],
+  "docs_only_paths": []
+}
