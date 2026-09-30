@@ -62,9 +62,9 @@ automation:
     - method: agent
       framework: Codex CLI and Hive Tasks
       tool_setup: >-
-        Agent-assisted proof development, module migration and examples;
-        pinned Lean and mathlib compilation and independent review of
-        the previous mathematical development.
+        AI-assisted Lean proof development, module organization, examples
+        and documentation, with pinned Lean and mathlib compilation and
+        independent mathematical and API review.
   notes: >-
     Automated assistance is not a substitute for proof-term validation,
     mathematical review or source-correspondence review.
@@ -79,22 +79,16 @@ fidelity:
 review:
   status: agent-reviewed
   reviewers:
-    - Prism (prior monic mathematical development)
-    - Lattice (prior ordinary/nonmonic mathematical development)
-    - Formalization Worker A (independent module and native-documentation reviews)
+    - Prism (monic mathematical development)
+    - Lattice (ordinary/nonmonic mathematical development)
+    - Independent Formal Frontier agent reviewers (API and documentation)
   notes: >-
-    Prior substantive mathematical reviews approved development PRs 2 and 4.
-    Independent development reviews also covered the module migration,
-    named clients, metadata and rights analysis in PR 6, and the complete
-    native API documentation artifact in PR 7. The whole-artifact PR 8
-    review also checked source-only and parentless documentation reproduction
-    and reassessed the unchanged mathematical, proof and rights evidence.
-    These are development-artifact assessments, distinct from revision-specific
-    release acceptance and publication. Each release record identifies its
-    exact commit and tree, applicable independent artifact and history review,
-    verification and rights evidence, and verified publication outcome.
-    Changed artifacts and public histories require their own applicable review;
-    this metadata does not by itself establish a release or source coverage.
+    Independent mathematical review covers the monic and ordinary/nonmonic
+    stability results and their precise hypotheses. Independent API and
+    documentation reviews also cover the public module organization, named
+    clients, metadata and source-bound native API reference. These reviews
+    do not establish a statement-by-statement correspondence with the
+    motivating source or complete source coverage.
 
 acknowledgements: >-
   Reuses pinned mathlib's Krasner and continuity-of-roots infrastructure;

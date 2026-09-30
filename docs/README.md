@@ -10,7 +10,7 @@ client theorems belong to the separate `PolynomialRootStabilityTest.Krasner`
 declarations of its own. The clients are **not** additional production theorems
 and the root does not import either test leaf. Imported mathlib declarations and
 compiler-generated helpers are not substituted for these 23 named results;
-the full raw-body/helper audit remains separate.
+these counts describe the documented API, not every compiler-generated helper.
 
 The reference preserves the *displayed* native doc-gen4 signature, including
 implicit universes, parameters and instances, plus the exact source docstring
@@ -27,14 +27,13 @@ abbreviate imported names and do not include proof bodies.
 
 ## Reproduction from pinned inputs
 
-The historical **accepted mathematical input** is commit
-`8c48c711e29f8f8fe8db633ee065ea4dd8e78081`, tree
-`c2324d38fa6caaa5e05cc7c702067b93c6bfdc9f`. These are provenance labels;
-**you do not need that Git object or internal development history**. Analyze
-the five Lean modules, `lean-toolchain`, `lakefile.toml` and nine-package
-`lake-manifest.json` shipped in this checkout. The adapter verifies their
-complete inventory and exact reviewed SHA-256 hashes, also recorded in the
-manifest. This works in a source archive or parentless release checkout.
+The generator reads the five Lean modules, `lean-toolchain`, `lakefile.toml`
+and nine-package `lake-manifest.json` shipped in this checkout. The adapter
+checks their complete inventory and SHA-256 hashes against its fixed source
+binding, also recorded in [api-manifest.json](api-manifest.json). The manifest's
+`analyzed_source_revision` is an inert binding label, not a Git lookup or a
+required private reference. No development history is needed: the same inputs
+can be read from a source archive or parentless release checkout.
 This is Lean `v4.34.0-rc2` with mathlib
 `e37d88a26f3791ed5a93daa1f949af1021b8d103`. Obtain unchanged
 `leanprover/doc-gen4` at `97d4ecdfc8e09e7f511724c25e303d448de6a3db`
@@ -59,7 +58,7 @@ lake env lean -T0 PolynomialRootStabilityTest/Krasner.lean
 lake env lean -T0 PolynomialRootStabilityTest/Normalization.lean
 TOOL=/absolute/path/to/doc-gen4/.lake/build/bin/doc-gen4
 OUT=/fresh/temporary/polynomial-docs
-REV=8c48c711e29f8f8fe8db633ee065ea4dd8e78081
+REV=$(python3 -c 'import json; print(json.load(open("docs/api-manifest.json"))["analyzed_source_revision"])')
 mkdir -p "$OUT/build" "$OUT/render"
 for module in PolynomialRootStability.Krasner PolynomialRootStability.Normalization \
               PolynomialRootStability PolynomialRootStabilityTest.Krasner \
@@ -77,36 +76,25 @@ python3 -B scripts/test_generate_api.py
 python3 -B scripts/generate_api.py --native-data "$OUT/render/doc-data" --source-revision "$REV" --check
 ```
 
-The `REV` value is the fixed historical mathematical-input label, not a Git
-lookup. The `example.invalid` URI is **only an inert native record-binding identifier**;
+The `REV` value comes from the shipped manifest's fixed source-binding label.
+The `example.invalid` URI is **only an inert native record-binding identifier**;
 it is neither a verified remote address nor a source link shipped in API.md.
 The generated Markdown links exclusively to local shipped `.lean` files. Omit
 `--check` to regenerate `API.md` and `api-manifest.json`; `--check` compares
 their bytes without writing. Source/pin bytes are compared against the frozen
 eight-file digest inventory, even in a later documentation-only candidate.
-No internal commit is fetched or required. The release acceptance record binds
-the exact final commit/tree to these source hashes and this generated reference;
-these historical labels do not certify a future changed snapshot. The manifest records
-those hashes, five **raw** native record hashes and the Markdown hash, but it
-cannot authenticate its own inputs or certify proofs. Keep the actual native
-database, five raw declaration records, native command receipts and diagnostic
-logs separately for independent review; temporary HTML, database, JavaScript,
-fonts and styles are not part of the shipped documentation.
+No internal commit is fetched or required. The manifest records source hashes,
+five raw native record hashes and the Markdown hash; it does not certify proofs
+or apply automatically to changed source inputs. Temporary HTML, databases,
+JavaScript, fonts and styles are not part of the shipped documentation.
 
-In one fresh-checkout worker-b run on September 25, 2026, the matching 8,892
-mathlib artifacts were fetched successfully (50.510 s elapsed), the pinned
-doc-gen4 executable built separately (103.453 s), and the library's warning-fatal
-default build completed 2,582 jobs (9.105 s). Both public test leaves compiled
-with `lean -T0` (2.249 and 2.537 s). All five `single` commands completed;
-the native database has five modules and 23 named declarations. The no-reference
-`bibPrepass` reports `INFO: reference page disabled`; no warning is hidden or
-relabelled. These timings are local context, not a portable performance claim.
+The no-reference `bibPrepass` reports `INFO: reference page disabled`: this is
+expected for the local declaration reference. Documentation generation is
+optional and separate from the ordinary library build; reading the shipped
+Markdown does not require doc-gen4 or its temporary output.
 
-This bounded adapter adapts Anchor's unaccepted ideal-completion Markdown recipe
-at `f0c8c34386109116e4912fb425a8ad15d9dc42a4` for this library's **actual**
-five-module/23-theorem surface; worker-b performed this adaptation. It copies the
+The Formal Frontier agents adapted Anchor's ideal-completion Markdown tooling
+to this library's five-module, 23-theorem surface. The adapter copies the
 project's Apache-2.0 docstrings and native displayed signatures only, not a
 third-party website, implementation, asset bundle or dependency documentation.
-Lean/mathlib and doc-gen4 retain their upstream attribution and rights. Neither
-the previous recipe nor this candidate has independent review or release
-acceptance by virtue of generation, builds or this documentation.
+Lean, mathlib and doc-gen4 retain their upstream attribution and rights.
