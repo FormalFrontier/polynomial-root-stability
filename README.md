@@ -86,6 +86,21 @@ changing dependency pins or replacing `.lake`, fetch it again.
 `LEAN_NUM_THREADS=2` configures Lean's runtime; it is not a limit on total
 processes or memory. Build time depends on the available cache and hardware.
 
+In one September 25, 2026 Linux run with the pinned Lean/mathlib versions,
+a successful matching 8,892-artifact cache hit and a package clean first, the
+warning-fatal default build reported 2,582 Lake jobs and roughly 9 seconds of
+wall-clock time with `LEAN_NUM_THREADS=2`. Those jobs do not count newly compiled
+mathlib modules. In a **separate fresh-checkout run**, fetching the matching
+cache took 50.510 seconds; the warning-fatal library build took 9.105 seconds,
+and separate public test-leaf `lean -T0` checks took 2.249 seconds (Krasner)
+and 2.537 seconds (Normalization). Building the separately pinned, optional
+doc-gen4 executable took 103.453 seconds in that run; see the
+[API reproduction notes](docs/README.md#reproduction-from-pinned-inputs).
+These historical local measurements are not portable benchmarks, aggregate
+build times or speedup claims. Peak memory, total CPU allocation and storage
+needs were not measured by these timings; optional documentation-tool setup
+is not required for ordinary library use.
+
 For example, the named checked client
 `PolynomialRootStabilityTest.aggregate_ordinary_stability` in
 `PolynomialRootStabilityTest/Normalization.lean` imports the aggregate root
