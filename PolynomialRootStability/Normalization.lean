@@ -1,5 +1,5 @@
 /-
-Released under Apache 2.0 license as described in the file LICENSE.
+SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 module
@@ -24,7 +24,7 @@ constants are included. No varying-degree neighbourhood or canonical
 splitting-field object is asserted.
 -/
 
-public section
+@[expose] public section
 
 set_option warningAsError true
 
@@ -32,9 +32,9 @@ open Polynomial
 
 noncomputable section
 
-namespace IsKrasner
-
 universe u v
+
+namespace IsKrasner
 
 variable {K : Type u} {L : Type v}
   [NormedField K] [NormedField L] [NormedAlgebra K L] [IsKrasner K L]

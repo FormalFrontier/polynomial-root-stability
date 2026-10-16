@@ -206,13 +206,23 @@ class Controls(unittest.TestCase):
             self.assertIn("optimized Python", result.stderr)
             self.assertEqual(list(Path(temporary).iterdir()), [])
 
-    def test_actual_source_bytes_without_git_or_historical_objects(self):
+    def test_preserved_historical_manifest_and_markdown_binding(self):
+        root = Path(api.__file__).resolve().parent.parent
+        manifest = json.loads((root / "docs/api-manifest.json").read_text())
+        self.assertEqual(manifest["analyzed_source_revision"], api.SOURCE)
+        self.assertEqual(manifest["analyzed_source_tree"], api.SOURCE_TREE)
+        self.assertEqual(manifest["inputs"], api.SOURCE_INPUT_SHA256)
+        self.assertEqual(manifest["api_sha256"],
+                         api.digest((root / "docs/API.md").read_bytes()))
+        self.assertFalse(manifest["proof_certification"])
+        self.assertFalse(manifest["release_acceptance"])
+
+    def test_current_inputs_are_not_silently_rebound_to_historical_snapshot(self):
         root = Path(api.__file__).resolve().parent.parent
         sources = {path: (root / path).read_bytes() for path in api.INPUTS}
         with patch.object(subprocess, "check_output", side_effect=AssertionError("no Git allowed")):
-            api.check_snapshot(api.SOURCE, sources)
-        self.assertEqual({path: api.digest(raw) for path, raw in sources.items()},
-                         api.SOURCE_INPUT_SHA256)
+            with self.assertRaisesRegex(ValueError, "source/pin drift"):
+                api.check_snapshot(api.SOURCE, sources)
 
 
 if __name__ == "__main__":

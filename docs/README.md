@@ -1,13 +1,23 @@
-# Native Markdown API reference
+# Historical root-field API snapshot
 
-[API.md](API.md) is a locally generated, self-contained reference to all **23
-named public theorems defined here**. Fourteen production theorems belong to
+[API.md](API.md) is the preserved, locally generated reference for the historical
+Krasner/Normalization surface: **23 named public theorems**. Its original bytes,
+[manifest](api-manifest.json), eight input hashes and generator binding are unchanged.
+The current checkout additionally exports `PolynomialRootStability.Newton` and
+`PolynomialRootStability.Ultrametric`. Both are outside this snapshot; use their
+[Newton](../PolynomialRootStability/Newton.lean) and
+[Ultrametric](../PolynomialRootStability/Ultrametric.lean) sources and the
+[current mathematical overview](../README.md) for its statement and status.
+The snapshot is not a fresh documentation or proof check of the current pins.
+
+Within the historical snapshot, fourteen production theorems belong to
 `PolynomialRootStability.Krasner` (11) and
 `PolynomialRootStability.Normalization` (three). Nine *publicly named* checked-use
 client theorems belong to the separate `PolynomialRootStabilityTest.Krasner`
 (two) and `PolynomialRootStabilityTest.Normalization` (seven) leaves. The
-`PolynomialRootStability` root reexports both production leaves and defines no
-declarations of its own. The clients are **not** additional production theorems
+historical `PolynomialRootStability` root reexports both production leaves and
+defines no declarations of its own. The current root reexports Newton and Ultrametric as well.
+The clients are **not** additional production theorems
 and the root does not import either test leaf. Imported mathlib declarations and
 compiler-generated helpers are not substituted for these 23 named results;
 these counts describe the documented API, not every compiler-generated helper.
@@ -25,10 +35,15 @@ intermediate fields, not canonical splitting-field equivalences or a claim of
 complete coverage of a motivating source. Native display signatures may
 abbreviate imported names and do not include proof bodies.
 
-## Reproduction from pinned inputs
+## Reproduction from historical pinned inputs
 
-The generator reads the five Lean modules, `lean-toolchain`, `lakefile.toml`
-and nine-package `lake-manifest.json` shipped in this checkout. The adapter
+Run the preserved generator only in a historical checkout or source archive
+containing the exact eight inputs listed by `api-manifest.json`: the five Lean
+modules, `lean-toolchain`, `lakefile.toml` and nine-package `lake-manifest.json`.
+The current checkout has changed those inputs (including the mathlib pin and
+root exports), so generation against it must fail closed rather than silently
+rebinding the historical snapshot. The commands below refer to that matching
+historical source tree, not the current branch. The adapter
 checks their complete inventory and SHA-256 hashes against its fixed source
 binding, also recorded in [api-manifest.json](api-manifest.json). The manifest's
 `analyzed_source_revision` is an inert binding label, not a Git lookup or a
@@ -45,10 +60,11 @@ If the native C compiler is not on `PATH`, prepend the directory containing
 not depend on mathlib. Set `LEAN_NUM_THREADS=2` only as a Lean runtime setting,
 not as a guaranteed total process or memory limit.
 
-From this repository root, first fetch the matching precompiled mathlib cache
-**successfully before building**, then check the production root and both test
-leaves. For documentation, run `single` in *this project's* `lake env`, so the
-separate pinned executable resolves the actual library imports:
+From the matching historical repository root, first fetch the matching
+precompiled mathlib cache **successfully before building**, then check the
+production root and both test leaves. For documentation, run `single` in that
+historical project's `lake env`, so the separate pinned executable resolves
+the actual library imports:
 
 ```bash
 elan toolchain install "$(cat lean-toolchain)"
@@ -82,7 +98,7 @@ it is neither a verified remote address nor a source link shipped in API.md.
 The generated Markdown links exclusively to local shipped `.lean` files. Omit
 `--check` to regenerate `API.md` and `api-manifest.json`; `--check` compares
 their bytes without writing. Source/pin bytes are compared against the frozen
-eight-file digest inventory, even in a later documentation-only candidate.
+eight-file digest inventory. It is deliberately not rebound to current sources.
 No internal commit is fetched or required. The manifest records source hashes,
 five raw native record hashes and the Markdown hash; it does not certify proofs
 or apply automatically to changed source inputs. Temporary HTML, databases,
@@ -93,8 +109,20 @@ expected for the local declaration reference. Documentation generation is
 optional and separate from the ordinary library build; reading the shipped
 Markdown does not require doc-gen4 or its temporary output.
 
-The Formal Frontier agents adapted Anchor's ideal-completion Markdown tooling
+Formal Frontier Agents adapted the ideal-completion library's Markdown tooling
 to this library's five-module, 23-theorem surface. The adapter copies the
 project's Apache-2.0 docstrings and native displayed signatures only, not a
 third-party website, implementation, asset bundle or dependency documentation.
 Lean, mathlib and doc-gen4 retain their upstream attribution and rights.
+
+## Current compatibility maintenance
+
+The current library retains all 23 named root-field theorem/client interfaces,
+while moving to mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5` on the same
+Lean `v4.34.0-rc2` toolchain. It adds explicit Lake implicit-variable/linter
+options and exposed public sections. The Normalization universe declarations
+are now explicit at file scope. These changes do not regenerate this snapshot.
+Its displayed mathematical signatures and declaration docstrings remain useful,
+but its configuration hashes and two-module root description are historical.
+The adapter’s data tests check the preserved manifest/Markdown binding and reject
+current inputs as a mismatch; they are not Lean or fresh native-record checks.

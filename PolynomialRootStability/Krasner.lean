@@ -1,5 +1,5 @@
 /-
-Released under Apache 2.0 license as described in the file LICENSE.
+SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 module
@@ -27,7 +27,7 @@ this module; the result concerns root-generated intermediate fields, not a
 canonical splitting-field object.
 -/
 
-public section
+@[expose] public section
 
 set_option warningAsError true
 

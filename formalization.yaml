@@ -5,7 +5,8 @@ project:
   description: >-
     Fixed-degree stability of polynomial root-generated intermediate fields
     inside a common Krasner normed extension, including monic, normalized,
-    and ordinary-coefficient versions with derived nearby separability.
+    and ordinary-coefficient versions with derived nearby separability, plus
+    quantitative Newton lifting and convergence with ultrametric estimates.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -15,10 +16,9 @@ sources:
     type: original-proof
     relationship: other
     note: >-
-      The precise fixed-IsKrasner formulation and its proof were developed
-      within the Formal Frontier project, first as source-side research and
-      then as a reviewed reusable library; no novelty for Krasner's lemma
-      or the motivating source theorem is asserted.
+      The fixed-IsKrasner formulation and its proof are original work of
+      Formal Frontier Agents; no novelty for Krasner's lemma or the motivating
+      source theorem is asserted.
   - title: Cohomology of Number Fields, corrected second edition 2.3
     authors:
       - Jürgen Neukirch
@@ -32,11 +32,24 @@ sources:
       Mathematical motivation, not an accepted statement-by-statement
       correspondence or a claim that section 12.1.1 is fully formalized.
 
+  - title: Local Fields and Their Extensions, second edition
+    authors:
+      - Ivan B. Fesenko
+      - Sergei V. Vostokov
+    type: book
+    location: "Chapter II, Section 1, Corollary 3 (p. 37) and Exercise 1 (p. 38)"
+    relationship: background
+    note: >-
+      Motivation for quantitative Newton lifting and convergence; no completed
+      source correspondence is asserted.
+
 status:
   scope: >-
     Nonzero separable reference and same-degree splitting comparison
     polynomials in one IsKrasner normed extension; real/complex variants,
-    varying degrees and canonical splitting-field objects excluded.
+    varying degrees and canonical splitting-field objects excluded. Also a
+    quantitative Newton lifting theorem for integral polynomials
+    over complete ultrametric normed fields; no higher-rank valuation claim.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms:
@@ -54,6 +67,11 @@ status:
       axioms: [propext, Classical.choice, Quot.sound]
     - declaration: IsKrasner.exists_pos_adjoin_rootSet_eq_of_separable
       file: PolynomialRootStability/Normalization.lean
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+
+    - declaration: Polynomial.exists_root_tendsto_iterate_newtonMap
+      file: PolynomialRootStability/Newton.lean
       sorry_count: 0
       axioms: [propext, Classical.choice, Quot.sound]
 
@@ -77,19 +95,14 @@ fidelity:
     real/complex-variant source correspondence claim.
 
 review:
-  status: agent-reviewed
-  reviewers:
-    - Prism (monic mathematical development)
-    - Lattice (ordinary/nonmonic mathematical development)
-    - Independent Formal Frontier agent reviewers (API and documentation)
+  status: pending
   notes: >-
-    Independent mathematical review covers the monic and ordinary/nonmonic
-    stability results and their precise hypotheses. Independent API and
-    documentation reviews also cover the public module organization, named
-    clients, metadata and source-bound native API reference. These reviews
-    do not establish a statement-by-statement correspondence with the
-    motivating source or complete source coverage.
+    The current contribution awaits independent mathematical and API review.
+    The metadata and historical API snapshot do not certify review or complete
+    source correspondence.
 
 acknowledgements: >-
   Reuses pinned mathlib's Krasner and continuity-of-roots infrastructure;
-  source material is not bundled.
+  source material is not bundled. Newton iteration reuses Mathlib's newtonMap;
+  quantitative lifting also uses its Banach fixed point and ultrametric norm APIs
+  and is inspired by its p-adic hensels_lemma.

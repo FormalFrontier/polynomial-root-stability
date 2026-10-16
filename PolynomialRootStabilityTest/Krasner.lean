@@ -1,5 +1,5 @@
 /-
-Released under Apache 2.0 license as described in the file LICENSE.
+SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 module
@@ -15,7 +15,7 @@ axiom for the latter. The independent universes do not force a same-type
 base and ambient field.
 -/
 
-public section
+@[expose] public section
 
 open Polynomial
 
