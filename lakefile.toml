@@ -20,4 +20,4 @@ name = "PolynomialRootStability"
 name = "PolynomialRootStabilityTest"
 roots = ["PolynomialRootStabilityTest.Krasner", "PolynomialRootStabilityTest.Normalization",
   "PolynomialRootStabilityTest.Newton", "PolynomialRootStabilityTest.NewtonContracts",
-  "PolynomialRootStabilityTest.PadicHensel"]
+  "PolynomialRootStabilityTest.PadicHensel", "PolynomialRootStabilityTest.ResultantFactorization"]

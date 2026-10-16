@@ -7,6 +7,7 @@ module
 public import PolynomialRootStability.Krasner
 public import PolynomialRootStability.Normalization
 public import PolynomialRootStability.Newton
+public import PolynomialRootStability.ResultantFactorization
 public import PolynomialRootStability.Ultrametric
 
 /-!

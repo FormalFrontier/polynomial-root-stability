@@ -6,7 +6,8 @@ project:
     Fixed-degree stability of polynomial root-generated intermediate fields
     inside a common Krasner normed extension, including monic, normalized,
     and ordinary-coefficient versions with derived nearby separability, plus
-    quantitative Newton lifting and convergence with ultrametric estimates.
+    quantitative Newton lifting with convergence and resultant-controlled
+    factorization over complete ultrametric normed fields.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -29,19 +30,22 @@ sources:
     location: "Section 12.1.1; corrected edition 2.3, May 2020"
     relationship: background
     note: >-
-      Mathematical motivation, not an accepted statement-by-statement
-      correspondence or a claim that section 12.1.1 is fully formalized.
+      Mathematical motivation for fixed-degree root-field stability. The
+      formulation here fixes a common normed ambient extension and assumes
+      splitting; no claim that section 12.1.1 is fully formalized is made.
 
   - title: Local Fields and Their Extensions, second edition
     authors:
       - Ivan B. Fesenko
       - Sergei V. Vostokov
     type: book
-    location: "Chapter II, Section 1, Corollary 3 (p. 37) and Exercise 1 (p. 38)"
+    location: "Chapter II, Section 1, Proposition 1.1 (p. 36), Corollary 3 (p. 37), Exercise 1 (p. 38)"
     relationship: background
     note: >-
-      Motivation for quantitative Newton lifting and convergence; no completed
-      source correspondence is asserted.
+      Motivation for quantitative Newton lifting, convergence and
+      resultant-controlled factorization. The normed-field formulations allow
+      arbitrary complete ultrametric normed fields and make zero/constant degree
+      conventions explicit; no complete source-formalization claim is made.
 
 status:
   scope: >-
@@ -49,7 +53,9 @@ status:
     polynomials in one IsKrasner normed extension; real/complex variants,
     varying degrees and canonical splitting-field objects excluded. Also a
     quantitative Newton lifting theorem for integral polynomials
-    over complete ultrametric normed fields; no higher-rank valuation claim.
+    over complete ultrametric normed fields, and resultant-controlled
+    two-factor lifting with degree and leading-coefficient preservation and
+    quantitative correction bounds; no higher-rank valuation claim.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms:
@@ -75,14 +81,18 @@ status:
       sorry_count: 0
       axioms: [propext, Classical.choice, Quot.sound]
 
+    - declaration: Polynomial.exists_factorization_of_supNorm_lt_resultant_sq
+      file: PolynomialRootStability/ResultantFactorization.lean
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+
 automation:
   methods:
     - method: agent
-      framework: Codex CLI and Hive Tasks
+      framework: Codex CLI
       tool_setup: >-
-        AI-assisted Lean proof development, module organization, examples
-        and documentation, with pinned Lean and mathlib compilation and
-        independent mathematical and API review.
+        AI-assisted Lean proof development, mathematical examples and
+        documentation with repository-pinned Lean and mathlib compilation.
   notes: >-
     Automated assistance is not a substitute for proof-term validation,
     mathematical review or source-correspondence review.
@@ -92,17 +102,19 @@ fidelity:
     Fixed Krasner normed extension with explicit splitting hypotheses,
     same natDegree and equality of root-generated intermediate fields;
     no equivalence of canonical splitting-field objects and no
-    real/complex-variant source correspondence claim.
+    real/complex-variant source correspondence claim. The resultant theorem
+    replaces a complete nontrivial discrete valuation by a complete ultrametric
+    field norm, expresses integrality through coefficient bounds, and uses a
+    strict WithBot error-degree bound for the degree and exact-leading-coefficient
+    constraint. It preserves both leading coefficients and includes zero and
+    constant degree conventions left implicit in the source.
 
 review:
   status: pending
-  notes: >-
-    The current contribution awaits independent mathematical and API review.
-    The metadata and historical API snapshot do not certify review or complete
-    source correspondence.
 
 acknowledgements: >-
   Reuses pinned mathlib's Krasner and continuity-of-roots infrastructure;
   source material is not bundled. Newton iteration reuses Mathlib's newtonMap;
   quantitative lifting also uses its Banach fixed point and ultrametric norm APIs
-  and is inspired by its p-adic hensels_lemma.
+  and is inspired by its p-adic hensels_lemma. Factor lifting reuses its Sylvester
+  map, adjugate, finite coefficient representations and polynomial sup norm.
