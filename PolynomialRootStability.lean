@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import PolynomialRootStability.CoefficientPerturbation
 public import PolynomialRootStability.Krasner
 public import PolynomialRootStability.Normalization
 public import PolynomialRootStability.Newton

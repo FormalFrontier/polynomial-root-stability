@@ -69,6 +69,16 @@ give injectivity on this strict ball. The theorem
 [`Polynomial.injOn_eval_of_mul_norm_sub_lt_norm_derivative`](PolynomialRootStability/RootUniqueness.lean)
 expresses this as `Set.InjOn`; the anchor need not be a root.
 
+### Root bounds under coefficient perturbation
+
+For an ultrametric commutative seminormed ring with multiplicative seminorm, assume
+`∀ n, ‖f.coeff n‖ ≤ M`, `‖a‖ ≤ 1`, `f.eval x = 0`, and `g.eval y = 0`.
+If `M * ‖x - a‖ < ‖f.derivative.eval a‖` and `M * ‖y - a‖ < ‖f.derivative.eval a‖`,
+and `∀ n, ‖f.coeff n - g.coeff n‖ ≤ ε`, then `‖f.derivative.eval a‖ * ‖x - y‖ ≤ ε`.
+No separation or completeness is needed; `ε = 0` gives zero seminorm distance,
+not necessarily equality of roots.
+See [coefficient perturbation](PolynomialRootStability/CoefficientPerturbation.lean).
+
 ### Root uniqueness in an ultrametric normed ring
 
 Let `R` be an ultrametric normed commutative ring with multiplicative norm,
