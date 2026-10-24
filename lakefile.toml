@@ -21,7 +21,8 @@ name = "PolynomialRootStability"
 name = "PolynomialRootStabilityTest"
 roots = ["PolynomialRootStabilityTest.Krasner", "PolynomialRootStabilityTest.Normalization",
   "PolynomialRootStabilityTest.Newton", "PolynomialRootStabilityTest.NewtonContracts",
-  "PolynomialRootStabilityTest.PadicHensel", "PolynomialRootStabilityTest.ResultantFactorization"]
+  "PolynomialRootStabilityTest.PadicHensel", "PolynomialRootStabilityTest.ResultantFactorization",
+  "PolynomialRootStabilityTest.NewtonNaturality"]
 
 [lean_lib.leanOptions]
 weak.linter.privateModule = false
