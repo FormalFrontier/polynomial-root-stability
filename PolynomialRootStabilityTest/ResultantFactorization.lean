@@ -40,9 +40,6 @@ drops their degrees; the field resultant calculation retains both sizes two.
   formulas; its polynomial sup norm is the maximum of coefficient norms.
 -/
 
--- This test module intentionally exports no public mathematical API.
-set_option linter.privateModule false
-
 @[expose] public section
 
 namespace Polynomial

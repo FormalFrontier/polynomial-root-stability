@@ -1,6 +1,7 @@
 name = "polynomial-root-stability"
 version = "0.1.0"
 defaultTargets = ["PolynomialRootStability", "PolynomialRootStabilityTest"]
+lintDriver = "batteries/runLinter"
 
 [leanOptions]
 autoImplicit = false
@@ -21,3 +22,6 @@ name = "PolynomialRootStabilityTest"
 roots = ["PolynomialRootStabilityTest.Krasner", "PolynomialRootStabilityTest.Normalization",
   "PolynomialRootStabilityTest.Newton", "PolynomialRootStabilityTest.NewtonContracts",
   "PolynomialRootStabilityTest.PadicHensel", "PolynomialRootStabilityTest.ResultantFactorization"]
+
+[lean_lib.leanOptions]
+weak.linter.privateModule = false
