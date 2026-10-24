@@ -84,7 +84,8 @@ example [Fact (Nat.Prime 3)] :
       (∀ x : Padic 3,
         ι x ∈ Metric.ball (ι 1) 1 ↔ x ∈ Metric.ball (1 : Padic 3) 1) ∧
       Tendsto (fun n : ℕ => p.newtonMap^[n] (1 : Padic 3)) atTop (𝓝 (-2)) ∧
-      Tendsto (fun n : ℕ => (p.map ι).newtonMap^[n] (ι 1)) atTop (𝓝 (ι (-2))) := by
+      Tendsto (fun n : ℕ => (p.map ι).newtonMap^[n] (ι 1)) atTop (𝓝 (ι (-2))) ∧
+      p.eval (p.newtonMap (1 : Padic 3)) ≠ p.eval (7 : Padic 3) := by
   let p : (Padic 3)[X] := X ^ 2 - C 4
   let ι : Padic 3 →+* PadicComplex 3 := algebraMap (Padic 3) (PadicComplex 3)
   have hnorm (x : Padic 3) : ‖ι x‖ = ‖x‖ := by
@@ -170,6 +171,14 @@ example [Fact (Nat.Prime 3)] :
       (f := p) (M := (1 : ℝ)) (a := (1 : Padic 3))
       (b := p.newtonMap (1 : Padic 3)) (c := (7 : Padic 3))
       hcoeff (by simp) hstep hseven
+  have hfirst_ne_seven : p.newtonMap (1 : Padic 3) ≠ (7 : Padic 3) := by
+    rw [hfirst]
+    norm_num
+  have hinj := Polynomial.injOn_eval_of_mul_norm_sub_lt_norm_derivative
+    (f := p) (M := (1 : ℝ)) (a := (1 : Padic 3)) hcoeff (by simp)
+  have heval_ne : p.eval (p.newtonMap (1 : Padic 3)) ≠ p.eval (7 : Padic 3) := by
+    intro heq
+    exact hfirst_ne_seven (hinj hstep hseven heq)
   have hroot : p.eval (-2 : Padic 3) = 0 := by
     norm_num [p]
   have hminus : ‖(-2 : Padic 3) - 1‖ = (1 / 3 : ℝ) := by
@@ -234,7 +243,7 @@ example [Fact (Nat.Prime 3)] :
     hfirst, hfirst_ne, ⟨hstep, hscale_nonzero, hscale⟩, ⟨hTwo, hTwo_pos⟩,
     hroot, hminus, hroot_ball, hother_root, hother_ball,
     hsource_ball_unique, htroot, htroot_ball, htarget_ball_unique, hball_iff,
-    hsource_limit, htarget_limit⟩
+    hsource_limit, htarget_limit, heval_ne⟩
 
 example [Fact (Nat.Prime 3)] :
     let p : (Padic 3)[X] := X ^ 2 - C 4

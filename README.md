@@ -64,6 +64,11 @@ under the same assumptions on `R`, `f`, `M`, and `a` whenever both
 `M * ‖c - a‖ < ‖f.derivative.eval a‖`; the derivative factor remains at the
 original anchor `a`.
 
+When `R` is a normed commutative ring, the same coefficient and anchor bounds
+give injectivity on this strict ball. The theorem
+[`Polynomial.injOn_eval_of_mul_norm_sub_lt_norm_derivative`](PolynomialRootStability/RootUniqueness.lean)
+expresses this as `Set.InjOn`; the anchor need not be a root.
+
 ### Root uniqueness in an ultrametric normed ring
 
 Let `R` be an ultrametric normed commutative ring with multiplicative norm,
