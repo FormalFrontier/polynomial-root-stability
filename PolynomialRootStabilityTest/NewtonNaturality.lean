@@ -133,7 +133,7 @@ example [Fact (Nat.Prime 3)] :
   have hother_ball : (2 : Padic 3) ∉ Metric.ball (1 : Padic 3) 1 := by
     rw [Metric.mem_ball, dist_eq_norm]
     norm_num
-  obtain ⟨a, ⟨_, _, _, _, _, hsource_limit, _, hsource_unique⟩,
+  obtain ⟨a, ⟨_, _, _, _, hsource_deriv, hsource_limit, _, hsource_unique⟩,
       ⟨_, _, _, _, _, _, _, htarget_unique⟩⟩ :=
     Polynomial.exists_root_tendsto_iterate_newtonMap_map
       ι hι (f := p) hcoeff (by simp) hclose
@@ -143,8 +143,17 @@ example [Fact (Nat.Prime 3)] :
   have hsource_ball_unique : ∀ b : Padic 3, p.eval b = 0 →
       b ∈ Metric.ball (1 : Padic 3) 1 → b = -2 := by
     intro b hb hball
-    apply hsource_unique b hb
-    simpa only [Metric.mem_ball, dist_eq_norm, hderivnorm] using hball
+    apply Polynomial.eq_of_eval_eq_zero_of_mul_norm_sub_lt_norm_derivative
+      (y := (-2 : Padic 3)) hcoeff
+      (by simpa only [norm_neg, htwo] using (le_refl (1 : ℝ))) hb hroot
+    rw [one_mul, hsource_deriv, hderivnorm]
+    calc
+      ‖b - (-2 : Padic 3)‖ ≤ max ‖b - 1‖ ‖(1 : Padic 3) - (-2)‖ := by
+        simpa only [sub_add_sub_cancel] using
+          IsUltrametricDist.norm_add_le_max (b - 1) ((1 : Padic 3) - (-2))
+      _ < 1 := max_lt
+        (by simpa only [Metric.mem_ball, dist_eq_norm] using hball)
+        (by rw [norm_sub_rev]; exact hminus_lt)
   have htderivnorm : ‖(p.map ι).derivative.eval (ι 1)‖ = 1 := by
     rw [derivative_map, eval_map_apply, hnorm, hderivnorm]
   have htroot : (p.map ι).eval (ι (-2)) = 0 := by

@@ -6,6 +6,7 @@ module
 
 public import PolynomialRootStability.Newton
 public import PolynomialRootStability.NewtonNaturality
+public import PolynomialRootStability.RootUniqueness
 
 /-!
 # Naturality of quantitative Newton lifting
@@ -24,20 +25,6 @@ open Filter
 open scoped Topology
 
 namespace Polynomial
-
-private theorem eq_of_eval_eq_zero_of_norm_sub_lt_derivative
-    {K : Type*} [NormedField K] [IsUltrametricDist K]
-    {f : K[X]} {x y : K} (hf : ∀ n : ℕ, ‖f.coeff n‖ ≤ 1)
-    (hx : ‖x‖ ≤ 1) (hy : ‖y‖ ≤ 1)
-    (hfx : f.eval x = 0) (hfy : f.eval y = 0)
-    (hxy : ‖x - y‖ < ‖f.derivative.eval y‖) : x = y := by
-  by_contra hne
-  have hr : 0 < ‖x - y‖ := norm_pos_iff.mpr (sub_ne_zero.mpr hne)
-  have ht := norm_eval_sub_sub_derivative_mul_le_of_norm_coeff_le hf hx hy
-  simp only [hfx, hfy, sub_self, zero_sub, norm_neg, norm_mul, one_mul] at ht
-  have hlt : ‖x - y‖ ^ 2 < ‖f.derivative.eval y‖ * ‖x - y‖ := by
-    simpa only [pow_two] using mul_lt_mul_of_pos_right hxy hr
-  exact (not_lt_of_ge ht) hlt
 
 /-- Quantitative Newton lifting commutes with an isometric field embedding.
 Both conclusions have the full form of
@@ -99,7 +86,6 @@ theorem exists_root_tendsto_iterate_newtonMap_map
     intro n
     simpa only [coeff_map, hnorm] using hf n
   have haL : ‖ι a‖ ≤ 1 := by simpa only [hnorm] using ha
-  have ha₀L : ‖ι a₀‖ ≤ 1 := by simpa only [hnorm] using ha₀
   have hrootL : (f.map ι).eval (ι a) = 0 := by
     rw [heval, hroot, map_zero]
   have hstrictL : ‖ι a - ι a₀‖ < ‖(f.map ι).derivative.eval (ι a₀)‖ := by
@@ -125,23 +111,14 @@ theorem exists_root_tendsto_iterate_newtonMap_map
       simpa only [map_zero] using hzero
     · simpa only [hiter_map, hDnorm] using he
   · intro b hbroot hbclose
-    have hd₀ : ‖(f.map ι).derivative.eval (ι a₀)‖ ≤ 1 := by
-      rw [hDnorm]
-      exact norm_eval_le_of_norm_coeff_le
-        (norm_derivative_coeff_le_of_norm_coeff_le hf) ha₀
     have htri (x y z : L) : ‖x - z‖ ≤ max ‖x - y‖ ‖y - z‖ := by
       simpa only [sub_add_sub_cancel] using
         IsUltrametricDist.norm_add_le_max (x - y) (y - z)
-    have hbint : ‖b‖ ≤ 1 := calc
-      ‖b‖ = ‖b - (0 : L)‖ := by rw [sub_zero]
-      _ ≤ max ‖b - ι a₀‖ ‖ι a₀ - 0‖ := htri b (ι a₀) 0
-      _ ≤ 1 := max_le (hbclose.le.trans hd₀)
-        (by simpa only [sub_zero] using ha₀L)
     have hba : ‖b - ι a‖ < ‖(f.map ι).derivative.eval (ι a₀)‖ := by
       refine lt_of_le_of_lt (htri b (ι a₀) (ι a)) (max_lt hbclose ?_)
       rw [norm_sub_rev]
       exact hstrictL
-    exact eq_of_eval_eq_zero_of_norm_sub_lt_derivative hfL hbint haL
-      hbroot hrootL (by simpa only [hderivL] using hba)
+    exact eq_of_eval_eq_zero_of_mul_norm_sub_lt_norm_derivative hfL haL
+      hbroot hrootL (by simpa only [one_mul, hderivL] using hba)
 
 end Polynomial

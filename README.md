@@ -37,6 +37,24 @@ normalization to obtain the stated local-constancy interfaces. See the
 [historical root-field API reference](docs/README.md) and the
 [generic checked-use clients](PolynomialRootStabilityTest/Normalization.lean).
 
+### Root uniqueness in an ultrametric normed ring
+
+Let `R` be an ultrametric normed commutative ring with multiplicative norm,
+let `f : R[X]` satisfy `∀ n, ‖f.coeff n‖ ≤ M`, and let `y` be a root with
+`‖y‖ ≤ 1`. Then every root `x` satisfying
+`M * ‖x - y‖ < ‖f.derivative.eval y‖` equals `y`. The criterion
+[`Polynomial.eq_of_eval_eq_zero_of_mul_norm_sub_lt_norm_derivative`](PolynomialRootStability/RootUniqueness.lean)
+requires neither division nor completeness, and does not assume `‖x‖ ≤ 1`:
+the derivative bound and the strict inequality imply that bound. The standard
+first-order Taylor estimate then compares the linear term with the quadratic
+remainder. The coefficient bound is arbitrary; it need not be one.
+
+The [3-adic Newton example](PolynomialRootStabilityTest/NewtonNaturality.lean)
+for `X² - 4` at `1` uses this criterion to identify every source root in the
+strict radius-one ball with `-2`. The same example retains convergence under
+the embedding into the 3-adic complex field and uniqueness among all target
+roots in the target ball; the other root `2` lies on the excluded boundary.
+
 ### Quantitative Newton lifting
 
 For a complete ultrametric normed field `K`, a polynomial `f : K[X]` with
