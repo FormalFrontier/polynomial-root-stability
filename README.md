@@ -37,6 +37,25 @@ normalization to obtain the stated local-constancy interfaces. See the
 [historical root-field API reference](docs/README.md) and the
 [generic checked-use clients](PolynomialRootStabilityTest/Normalization.lean).
 
+### Local polynomial norm scaling
+
+Let `R` be an ultrametric commutative seminormed ring with multiplicative
+seminorm. If `f : R[X]` satisfies `∀ n, ‖f.coeff n‖ ≤ M`, `‖a‖ ≤ 1`, and
+`M * ‖b - a‖ < ‖f.derivative.eval a‖`, then
+
+```lean
+‖f.eval b - f.eval a‖ = ‖f.derivative.eval a‖ * ‖b - a‖
+```
+
+The theorem
+[`Polynomial.norm_eval_sub_eq_of_mul_norm_sub_lt_norm_derivative`](PolynomialRootStability/Ultrametric.lean)
+requires no root, division, completeness or separated norm. Only the anchor
+`a` is assumed to lie in the unit ball; the bound on `b` follows from the
+hypotheses. Zero seminorm distance is allowed without identifying the points.
+The [3-adic Newton example](PolynomialRootStabilityTest/NewtonNaturality.lean)
+instantiates this identity at `a = 1` and `b = 5 / 2` for `X² - 4`, with
+nonzero evaluation-difference norm and displacement norm both equal to `1 / 3`.
+
 ### Root uniqueness in an ultrametric normed ring
 
 Let `R` be an ultrametric normed commutative ring with multiplicative norm,
@@ -45,9 +64,9 @@ let `f : R[X]` satisfy `∀ n, ‖f.coeff n‖ ≤ M`, and let `y` be a root wit
 `M * ‖x - y‖ < ‖f.derivative.eval y‖` equals `y`. The criterion
 [`Polynomial.eq_of_eval_eq_zero_of_mul_norm_sub_lt_norm_derivative`](PolynomialRootStability/RootUniqueness.lean)
 requires neither division nor completeness, and does not assume `‖x‖ ≤ 1`:
-the derivative bound and the strict inequality imply that bound. The standard
-first-order Taylor estimate then compares the linear term with the quadratic
-remainder. The coefficient bound is arbitrary; it need not be one.
+the derivative bound and the strict inequality imply that bound. The local norm
+scaling identity forces `‖x - y‖ = 0`, and separation gives equality.
+The coefficient bound is arbitrary; it need not be one.
 
 The [3-adic Newton example](PolynomialRootStabilityTest/NewtonNaturality.lean)
 for `X² - 4` at `1` uses this criterion to identify every source root in the

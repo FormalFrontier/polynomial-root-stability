@@ -122,4 +122,43 @@ theorem norm_eval_sub_sub_derivative_mul_le_of_norm_coeff_le
 
 end SeminormedCommRing
 
+/-- A polynomial scales distances from a unit-ball anchor by its derivative norm
+when the coefficient-controlled displacement is strictly smaller than that norm.
+The receiver automatically lies in the unit ball; no root or separated norm is required. -/
+theorem norm_eval_sub_eq_of_mul_norm_sub_lt_norm_derivative
+    [SeminormedCommRing R] [NormMulClass R] [IsUltrametricDist R]
+    {f : R[X]} {M : ℝ} {a b : R}
+    (hf : ∀ n : ℕ, ‖f.coeff n‖ ≤ M) (ha : ‖a‖ ≤ 1)
+    (hba : M * ‖b - a‖ < ‖f.derivative.eval a‖) :
+    ‖f.eval b - f.eval a‖ = ‖f.derivative.eval a‖ * ‖b - a‖ := by
+  have hM : 0 ≤ M := (norm_nonneg (f.coeff 0)).trans (hf 0)
+  have hd : ‖f.derivative.eval a‖ ≤ M :=
+    norm_eval_le_of_norm_coeff_le
+      (norm_derivative_coeff_le_of_norm_coeff_le hf) ha
+  have hdist : ‖b - a‖ < 1 :=
+    lt_of_mul_lt_mul_left
+      (by simpa only [mul_one] using hba.trans_le hd) hM
+  have hb : ‖b‖ ≤ 1 := by
+    simpa only [sub_add_cancel] using
+      (IsUltrametricDist.norm_add_le_max (b - a) a).trans (max_le hdist.le ha)
+  by_cases hzero : ‖b - a‖ = 0
+  · have hbound := norm_eval_sub_le_of_norm_coeff_le hf hb ha
+    rw [hzero, mul_zero] at hbound ⊢
+    exact le_antisymm hbound (norm_nonneg _)
+  · have hpos : 0 < ‖b - a‖ :=
+      (lt_or_eq_of_le (norm_nonneg (b - a))).resolve_right (Ne.symm hzero)
+    have hlt : M * ‖b - a‖ ^ 2 < ‖f.derivative.eval a‖ * ‖b - a‖ := by
+      simpa only [pow_two, mul_assoc] using mul_lt_mul_of_pos_right hba hpos
+    have hrem : ‖f.eval b - f.eval a - f.derivative.eval a * (b - a)‖ <
+        ‖f.derivative.eval a * (b - a)‖ := by
+      rw [norm_mul]
+      exact (norm_eval_sub_sub_derivative_mul_le_of_norm_coeff_le hf hb ha).trans_lt hlt
+    have hnorm := IsUltrametricDist.norm_eq_of_add_norm_lt_max
+      (x := f.eval b - f.eval a) (y := -(f.derivative.eval a * (b - a)))
+      (by
+        simpa only [sub_eq_add_neg, norm_neg] using
+          hrem.trans_le (le_max_right ‖f.eval b - f.eval a‖
+            ‖f.derivative.eval a * (b - a)‖))
+    simpa only [norm_neg, norm_mul] using hnorm
+
 end Polynomial

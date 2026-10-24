@@ -15,6 +15,8 @@ public import PolynomialRootStability.RootNaturality
 For `X ^ 2 - 4`, Newton iteration starting at `1` converges to `-2` over the
 3-adic field and to its image over the 3-adic complex field. The first iterate
 is `5 / 2`, and the other root `2` lies outside the strict uniqueness ball.
+The first step also gives a rootless local norm comparison: its evaluation
+changes from `-3` to `9 / 4`, with nonzero difference norm `1 / 3`.
 The canonical embedding preserves membership in this radius-one ball and
 identifies the source root with the root specified by a target uniqueness
 certificate.
@@ -58,6 +60,12 @@ example [Fact (Nat.Prime 3)] :
         ((p.map ι).newtonMap : PadicComplex 3 → PadicComplex 3) ∧
       p.newtonMap (1 : Padic 3) = (5 / 2 : Padic 3) ∧
       p.newtonMap (1 : Padic 3) ≠ 1 ∧
+      ((1 : ℝ) * ‖p.newtonMap (1 : Padic 3) - 1‖ <
+          ‖p.derivative.eval (1 : Padic 3)‖ ∧
+        0 < ‖p.eval (p.newtonMap (1 : Padic 3)) - p.eval (1 : Padic 3)‖ ∧
+        ‖p.eval (p.newtonMap (1 : Padic 3)) - p.eval (1 : Padic 3)‖ =
+          ‖p.derivative.eval (1 : Padic 3)‖ *
+            ‖p.newtonMap (1 : Padic 3) - 1‖) ∧
       p.eval (-2 : Padic 3) = 0 ∧
       ‖(-2 : Padic 3) - 1‖ = (1 / 3 : ℝ) ∧
       (-2 : Padic 3) ∈ Metric.ball (1 : Padic 3) 1 ∧
@@ -118,6 +126,23 @@ example [Fact (Nat.Prime 3)] :
   have hfirst_ne : p.newtonMap (1 : Padic 3) ≠ 1 := by
     rw [hfirst]
     norm_num
+  have hstep : (1 : ℝ) * ‖p.newtonMap (1 : Padic 3) - 1‖ <
+      ‖p.derivative.eval (1 : Padic 3)‖ := by
+    rw [one_mul, hfirst, hderivnorm]
+    have hsub : (5 / 2 : Padic 3) - 1 = 3 / 2 := by norm_num
+    rw [hsub, norm_div, hthree, htwo]
+    norm_num
+  have hscale :
+      ‖p.eval (p.newtonMap (1 : Padic 3)) - p.eval (1 : Padic 3)‖ =
+        ‖p.derivative.eval (1 : Padic 3)‖ *
+          ‖p.newtonMap (1 : Padic 3) - 1‖ :=
+    Polynomial.norm_eval_sub_eq_of_mul_norm_sub_lt_norm_derivative
+      (f := p) (M := (1 : ℝ)) (a := (1 : Padic 3))
+      (b := p.newtonMap (1 : Padic 3)) hcoeff (by simp) hstep
+  have hscale_nonzero :
+      0 < ‖p.eval (p.newtonMap (1 : Padic 3)) - p.eval (1 : Padic 3)‖ := by
+    rw [hscale, hderivnorm, one_mul]
+    exact norm_pos_iff.mpr (sub_ne_zero.mpr hfirst_ne)
   have hroot : p.eval (-2 : Padic 3) = 0 := by
     norm_num [p]
   have hminus : ‖(-2 : Padic 3) - 1‖ = (1 / 3 : ℝ) := by
@@ -179,7 +204,8 @@ example [Fact (Nat.Prime 3)] :
     have hlim := (hι.continuous.tendsto (-2)).comp hsource_limit
     simpa only [Function.comp_def, hiter] using hlim
   exact ⟨hι, hcoeff, norm_one, hunit, herror, hderivnorm, hclose, hsem,
-    hfirst, hfirst_ne, hroot, hminus, hroot_ball, hother_root, hother_ball,
+    hfirst, hfirst_ne, ⟨hstep, hscale_nonzero, hscale⟩,
+    hroot, hminus, hroot_ball, hother_root, hother_ball,
     hsource_ball_unique, htroot, htroot_ball, htarget_ball_unique, hball_iff,
     hsource_limit, htarget_limit⟩
 
