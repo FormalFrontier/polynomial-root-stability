@@ -56,6 +56,14 @@ The [3-adic Newton example](PolynomialRootStabilityTest/NewtonNaturality.lean)
 instantiates this identity at `a = 1` and `b = 5 / 2` for `X² - 4`, with
 nonzero evaluation-difference norm and displacement norm both equal to `1 / 3`.
 
+The two-point theorem
+[`Polynomial.norm_eval_sub_eval_eq_of_mul_norm_sub_lt_norm_derivative`](PolynomialRootStability/Ultrametric.lean)
+gives `‖f.eval c - f.eval b‖ = ‖f.derivative.eval a‖ * ‖c - b‖`
+under the same assumptions on `R`, `f`, `M`, and `a` whenever both
+`M * ‖b - a‖ < ‖f.derivative.eval a‖` and
+`M * ‖c - a‖ < ‖f.derivative.eval a‖`; the derivative factor remains at the
+original anchor `a`.
+
 ### Root uniqueness in an ultrametric normed ring
 
 Let `R` be an ultrametric normed commutative ring with multiplicative norm,

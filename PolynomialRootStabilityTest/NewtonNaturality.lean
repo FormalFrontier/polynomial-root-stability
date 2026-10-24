@@ -66,6 +66,10 @@ example [Fact (Nat.Prime 3)] :
         ‖p.eval (p.newtonMap (1 : Padic 3)) - p.eval (1 : Padic 3)‖ =
           ‖p.derivative.eval (1 : Padic 3)‖ *
             ‖p.newtonMap (1 : Padic 3) - 1‖) ∧
+      (‖p.eval (7 : Padic 3) - p.eval (p.newtonMap (1 : Padic 3))‖ =
+          ‖p.derivative.eval (1 : Padic 3)‖ *
+            ‖(7 : Padic 3) - p.newtonMap (1 : Padic 3)‖ ∧
+        0 < ‖p.eval (7 : Padic 3) - p.eval (p.newtonMap (1 : Padic 3))‖) ∧
       p.eval (-2 : Padic 3) = 0 ∧
       ‖(-2 : Padic 3) - 1‖ = (1 / 3 : ℝ) ∧
       (-2 : Padic 3) ∈ Metric.ball (1 : Padic 3) 1 ∧
@@ -143,6 +147,29 @@ example [Fact (Nat.Prime 3)] :
       0 < ‖p.eval (p.newtonMap (1 : Padic 3)) - p.eval (1 : Padic 3)‖ := by
     rw [hscale, hderivnorm, one_mul]
     exact norm_pos_iff.mpr (sub_ne_zero.mpr hfirst_ne)
+  have hseven : (1 : ℝ) * ‖(7 : Padic 3) - 1‖ <
+      ‖p.derivative.eval (1 : Padic 3)‖ := by
+    rw [one_mul, hderivnorm]
+    have hsub : (7 : Padic 3) - 1 = 3 * 2 := by norm_num
+    rw [hsub, norm_mul, hthree, htwo]
+    norm_num
+  have hTwo_pos :
+      0 < ‖p.eval (7 : Padic 3) - p.eval (p.newtonMap (1 : Padic 3))‖ := by
+    apply norm_pos_iff.mpr
+    rw [hfirst]
+    have hdiff : p.eval (7 : Padic 3) - p.eval (5 / 2 : Padic 3) =
+        (171 / 4 : Padic 3) := by
+      norm_num [p]
+    rw [hdiff]
+    norm_num
+  have hTwo :
+      ‖p.eval (7 : Padic 3) - p.eval (p.newtonMap (1 : Padic 3))‖ =
+        ‖p.derivative.eval (1 : Padic 3)‖ *
+          ‖(7 : Padic 3) - p.newtonMap (1 : Padic 3)‖ :=
+    Polynomial.norm_eval_sub_eval_eq_of_mul_norm_sub_lt_norm_derivative
+      (f := p) (M := (1 : ℝ)) (a := (1 : Padic 3))
+      (b := p.newtonMap (1 : Padic 3)) (c := (7 : Padic 3))
+      hcoeff (by simp) hstep hseven
   have hroot : p.eval (-2 : Padic 3) = 0 := by
     norm_num [p]
   have hminus : ‖(-2 : Padic 3) - 1‖ = (1 / 3 : ℝ) := by
@@ -204,7 +231,7 @@ example [Fact (Nat.Prime 3)] :
     have hlim := (hι.continuous.tendsto (-2)).comp hsource_limit
     simpa only [Function.comp_def, hiter] using hlim
   exact ⟨hι, hcoeff, norm_one, hunit, herror, hderivnorm, hclose, hsem,
-    hfirst, hfirst_ne, ⟨hstep, hscale_nonzero, hscale⟩,
+    hfirst, hfirst_ne, ⟨hstep, hscale_nonzero, hscale⟩, ⟨hTwo, hTwo_pos⟩,
     hroot, hminus, hroot_ball, hother_root, hother_ball,
     hsource_ball_unique, htroot, htroot_ball, htarget_ball_unique, hball_iff,
     hsource_limit, htarget_limit⟩

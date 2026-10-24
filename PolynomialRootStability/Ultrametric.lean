@@ -161,4 +161,53 @@ theorem norm_eval_sub_eq_of_mul_norm_sub_lt_norm_derivative
             ‖f.derivative.eval a * (b - a)‖))
     simpa only [norm_neg, norm_mul] using hnorm
 
+universe u
+
+/-- A polynomial scales distances between two points in the same derivative ball
+by the derivative norm at its unit-ball anchor. -/
+theorem norm_eval_sub_eval_eq_of_mul_norm_sub_lt_norm_derivative
+    {R : Type u} [SeminormedCommRing R] [NormMulClass R] [IsUltrametricDist R]
+    {f : R[X]} {M : ℝ} {a b c : R}
+    (hf : ∀ n : ℕ, ‖f.coeff n‖ ≤ M) (ha : ‖a‖ ≤ 1)
+    (hb : M * ‖b - a‖ < ‖f.derivative.eval a‖)
+    (hc : M * ‖c - a‖ < ‖f.derivative.eval a‖) :
+    ‖f.eval c - f.eval b‖ = ‖f.derivative.eval a‖ * ‖c - b‖ := by
+  have hM : 0 ≤ M := (norm_nonneg (f.coeff 0)).trans (hf 0)
+  have hf' : ∀ n : ℕ, ‖f.derivative.coeff n‖ ≤ M :=
+    norm_derivative_coeff_le_of_norm_coeff_le hf
+  have hd : ‖f.derivative.eval a‖ ≤ M :=
+    norm_eval_le_of_norm_coeff_le hf' ha
+  have hdist : ‖b - a‖ < 1 :=
+    lt_of_mul_lt_mul_left
+      (by simpa only [mul_one] using hb.trans_le hd) hM
+  have hb_unit : ‖b‖ ≤ 1 := by
+    simpa only [sub_add_cancel] using
+      (IsUltrametricDist.norm_add_le_max (b - a) a).trans (max_le hdist.le ha)
+  have hD : ‖f.derivative.eval b - f.derivative.eval a‖ <
+      ‖f.derivative.eval a‖ :=
+    (norm_eval_sub_le_of_norm_coeff_le hf' hb_unit ha).trans_lt hb
+  have hDb : ‖f.derivative.eval b‖ = ‖f.derivative.eval a‖ := by
+    have hnorm := IsUltrametricDist.norm_eq_of_add_norm_lt_max
+      (x := f.derivative.eval b) (y := -(f.derivative.eval a))
+      (by
+        simpa only [sub_eq_add_neg, norm_neg] using
+          hD.trans_le (le_max_right ‖f.derivative.eval b‖ ‖f.derivative.eval a‖))
+    simpa only [norm_neg] using hnorm
+  have hcb_le : ‖c - b‖ ≤ max ‖c - a‖ ‖b - a‖ := by
+    calc
+      ‖c - b‖ = ‖(c - a) + -(b - a)‖ := by
+        congr 1
+        ring
+      _ ≤ max ‖c - a‖ ‖-(b - a)‖ :=
+        IsUltrametricDist.norm_add_le_max _ _
+      _ = max ‖c - a‖ ‖b - a‖ := by rw [norm_neg]
+  have hcb : M * ‖c - b‖ < ‖f.derivative.eval a‖ := by
+    refine (mul_le_mul_of_nonneg_left hcb_le hM).trans_lt ?_
+    rcases le_total ‖c - a‖ ‖b - a‖ with h | h
+    · simpa only [max_eq_right h] using hb
+    · simpa only [max_eq_left h] using hc
+  have hscale := norm_eval_sub_eq_of_mul_norm_sub_lt_norm_derivative
+    (a := b) (b := c) hf hb_unit (by simpa only [hDb] using hcb)
+  simpa only [hDb] using hscale
+
 end Polynomial
