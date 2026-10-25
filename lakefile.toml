@@ -23,7 +23,8 @@ roots = ["PolynomialRootStabilityTest.Krasner", "PolynomialRootStabilityTest.Nor
   "PolynomialRootStabilityTest.Newton", "PolynomialRootStabilityTest.NewtonContracts",
   "PolynomialRootStabilityTest.PadicHensel", "PolynomialRootStabilityTest.ResultantFactorization",
   "PolynomialRootStabilityTest.NewtonNaturality",
-  "PolynomialRootStabilityTest.CoefficientPerturbation"]
+  "PolynomialRootStabilityTest.CoefficientPerturbation",
+  "PolynomialRootStabilityTest.CoefficientRootExistence"]
 
 [lean_lib.leanOptions]
 weak.linter.privateModule = false

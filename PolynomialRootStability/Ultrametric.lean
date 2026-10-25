@@ -120,6 +120,49 @@ theorem norm_eval_sub_sub_derivative_mul_le_of_norm_coeff_le
         (mul_le_mul hderiv (norm_pow_le' (x - y) (by decide : 0 < 2))
           (norm_nonneg _) ((norm_nonneg (f.coeff 0)).trans (hf 0)))
 
+/-- An approximate derivative at an anchor controls evaluation differences on the norm unit
+ball. The bound combines the quadratic Taylor remainder at `w`, the variation of the derivative
+from `a` to `w`, and the error in approximating the derivative at `a` by `d`. -/
+theorem norm_eval_sub_sub_mul_le_max_of_norm_coeff_le
+    {g : R[X]} {eta : ℝ} {a z w d : R}
+    (hg : ∀ n : ℕ, ‖g.coeff n‖ ≤ M) (ha : ‖a‖ ≤ 1) (hz : ‖z‖ ≤ 1) (hw : ‖w‖ ≤ 1)
+    (hd : ‖g.derivative.eval a - d‖ ≤ eta) :
+    ‖g.eval z - g.eval w - d * (z - w)‖ ≤
+      max (M * ‖w - a‖) (max eta (M * ‖z - w‖)) * ‖z - w‖ := by
+  have hderiv : ‖g.derivative.eval w - d‖ ≤ max (M * ‖w - a‖) eta := by
+    calc
+      ‖g.derivative.eval w - d‖ =
+          ‖(g.derivative.eval w - g.derivative.eval a) +
+            (g.derivative.eval a - d)‖ := by
+              congr 1
+              ring
+      _ ≤ max ‖g.derivative.eval w - g.derivative.eval a‖
+          ‖g.derivative.eval a - d‖ := IsUltrametricDist.norm_add_le_max _ _
+      _ ≤ max (M * ‖w - a‖) eta :=
+        max_le_max
+          (norm_eval_sub_le_of_norm_coeff_le
+            (norm_derivative_coeff_le_of_norm_coeff_le hg) hw ha) hd
+  have hid : g.eval z - g.eval w - d * (z - w) =
+      (g.eval z - g.eval w - g.derivative.eval w * (z - w)) +
+        (g.derivative.eval w - d) * (z - w) := by ring
+  rw [hid]
+  apply (IsUltrametricDist.norm_add_le_max _ _).trans
+  apply max_le
+  · calc
+      ‖g.eval z - g.eval w - g.derivative.eval w * (z - w)‖ ≤
+          M * ‖z - w‖ ^ 2 :=
+        norm_eval_sub_sub_derivative_mul_le_of_norm_coeff_le hg hz hw
+      _ = (M * ‖z - w‖) * ‖z - w‖ := by ring
+      _ ≤ max (M * ‖w - a‖) (max eta (M * ‖z - w‖)) * ‖z - w‖ :=
+        mul_le_mul_of_nonneg_right
+          ((le_max_right eta (M * ‖z - w‖)).trans
+            (le_max_right (M * ‖w - a‖) (max eta (M * ‖z - w‖))))
+          (norm_nonneg _)
+  · exact (norm_mul_le _ _).trans
+      (mul_le_mul_of_nonneg_right
+        (hderiv.trans (max_le_max le_rfl (le_max_left eta (M * ‖z - w‖))))
+        (norm_nonneg _))
+
 end SeminormedCommRing
 
 /-- A polynomial scales distances from a unit-ball anchor by its derivative norm

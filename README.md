@@ -69,14 +69,38 @@ give injectivity on this strict ball. The theorem
 [`Polynomial.injOn_eval_of_mul_norm_sub_lt_norm_derivative`](PolynomialRootStability/RootUniqueness.lean)
 expresses this as `Set.InjOn`; the anchor need not be a root.
 
-### Root bounds under coefficient perturbation
+### Root existence and bounds under coefficient perturbation
 
 For an ultrametric commutative seminormed ring with multiplicative seminorm, assume
 `∀ n, ‖f.coeff n‖ ≤ M`, `‖a‖ ≤ 1`, `f.eval x = 0`, and `g.eval y = 0`.
 If `M * ‖x - a‖ < ‖f.derivative.eval a‖` and `M * ‖y - a‖ < ‖f.derivative.eval a‖`,
 and `∀ n, ‖f.coeff n - g.coeff n‖ ≤ ε`, then `‖f.derivative.eval a‖ * ‖x - y‖ ≤ ε`.
-No separation or completeness is needed; `ε = 0` gives zero seminorm distance,
-not necessarily equality of roots.
+This is a bound on two given roots. No separation or completeness is needed;
+`ε = 0` gives zero seminorm distance, not necessarily equality of roots.
+
+For local root existence, set `D = ‖f.derivative.eval a‖`. In a complete ultrametric
+normed commutative ring with multiplicative norm,
+`Polynomial.exists_root_of_norm_coeff_sub_le_of_isUnit` takes the coefficient and
+anchor bounds, the root `x` of `f`, its strict ball inequality `M * ‖x - a‖ < D`,
+the coefficient-difference bound, `M * ε < D ^ 2`, and a unit original derivative.
+It constructs a root `y` of `g` in the same original strict derivative ball with
+`D * ‖x - y‖ ≤ ε`. Every root of `g` in that ball equals `y`, whether or not a
+scaled distance bound was supplied for it. No root of `g` is an input.
+
+Over a complete ultrametric normed field,
+`Polynomial.exists_root_of_norm_coeff_sub_le` derives the derivative unit from
+the strict ball inequality, so only the six coefficient, anchor, original-root,
+strict-ball, difference, and smallness conditions are inputs. These existential
+conclusions are the root-construction and characterization API, not a chosen-root
+object: use the witness for existence and its uniqueness clause to identify any
+other root in the original ball. The ring construction requires inverse data in
+the form of a unit original derivative; it does not assert existence over all
+complete ultrametric normed rings without such data.
+
+The same `ℚ_[3]` model with `f = X² - 4`, `g = X² - 25/4`, `a = 1`, and `x = -2`
+has `M = D = 1` and positive `ε = 1/9`. The constructed root is `y = 5/2`, and
+`D * ‖x - y‖ = 1/9`, so the bound is sharp. Zero perturbation is also supported:
+with `g = f` and `ε = 0`, the constructed root equals `x`.
 See [coefficient perturbation](PolynomialRootStability/CoefficientPerturbation.lean).
 
 ### Root uniqueness in an ultrametric normed ring
