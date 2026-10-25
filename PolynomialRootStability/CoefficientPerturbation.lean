@@ -38,6 +38,89 @@ universe u
 
 namespace Polynomial
 
+/-- A coefficient perturbation smaller than the reference derivative norm preserves exact
+distance scaling on the original strict derivative ball. -/
+theorem norm_eval_sub_eval_eq_of_norm_coeff_sub_le
+    {R : Type u} [SeminormedCommRing R] [NormMulClass R] [IsUltrametricDist R]
+    {f g : R[X]} {M ε : ℝ} {a y z : R}
+    (hf : ∀ n : ℕ, ‖f.coeff n‖ ≤ M)
+    (ha : ‖a‖ ≤ 1)
+    (hy : M * ‖y - a‖ < ‖f.derivative.eval a‖)
+    (hz : M * ‖z - a‖ < ‖f.derivative.eval a‖)
+    (hfg : ∀ n : ℕ, ‖f.coeff n - g.coeff n‖ ≤ ε)
+    (hsmall : ε < ‖f.derivative.eval a‖) :
+    ‖g.eval y - g.eval z‖ = ‖f.derivative.eval a‖ * ‖y - z‖ := by
+  have hDM : ‖f.derivative.eval a‖ ≤ M :=
+    norm_eval_le_of_norm_coeff_le
+      (norm_derivative_coeff_le_of_norm_coeff_le hf) ha
+  have hgf : ∀ n : ℕ, ‖g.coeff n - f.coeff n‖ ≤ ε := by
+    intro n
+    rw [norm_sub_rev]
+    exact hfg n
+  have hgf_coeff : ∀ n : ℕ, ‖(g - f).coeff n‖ ≤ ε := by
+    simpa only [coeff_sub] using hgf
+  have hg : ∀ n : ℕ, ‖g.coeff n‖ ≤ M := by
+    intro n
+    calc
+      ‖g.coeff n‖ = ‖(g.coeff n - f.coeff n) + f.coeff n‖ := by
+        rw [sub_add_cancel]
+      _ ≤ max ‖g.coeff n - f.coeff n‖ ‖f.coeff n‖ :=
+        IsUltrametricDist.norm_add_le_max _ _
+      _ ≤ M := max_le ((hgf n).trans (hsmall.le.trans hDM)) (hf n)
+  have hgd : ‖g.derivative.eval a - f.derivative.eval a‖ ≤ ε := by
+    have h := norm_eval_le_of_norm_coeff_le
+      (norm_derivative_coeff_le_of_norm_coeff_le hgf_coeff) ha
+    simpa only [derivative_sub, eval_sub] using h
+  have hgD : ‖g.derivative.eval a‖ = ‖f.derivative.eval a‖ := by
+    have hnorm := IsUltrametricDist.norm_eq_of_add_norm_lt_max
+      (x := g.derivative.eval a) (y := -(f.derivative.eval a))
+      (by
+        simpa only [sub_eq_add_neg, norm_neg] using
+          (hgd.trans_lt hsmall).trans_le
+            (le_max_right ‖g.derivative.eval a‖ ‖f.derivative.eval a‖))
+    simpa only [norm_neg] using hnorm
+  have hscale := norm_eval_sub_eval_eq_of_mul_norm_sub_lt_norm_derivative
+    (f := g) (a := a) (b := z) (c := y) hg ha
+    (by simpa only [hgD] using hz) (by simpa only [hgD] using hy)
+  simpa only [hgD] using hscale
+
+/-- Roots of two polynomials in one reference derivative ball satisfy a bound by their
+direct coefficient difference when the first polynomial is close to the reference polynomial. -/
+theorem norm_derivative_eval_mul_norm_sub_le_of_norm_coeff_sub_le_on_reference_ball
+    {R : Type u} [SeminormedCommRing R] [NormMulClass R] [IsUltrametricDist R]
+    {f g h : R[X]} {M ε η : ℝ} {a y z : R}
+    (hf : ∀ n : ℕ, ‖f.coeff n‖ ≤ M)
+    (ha : ‖a‖ ≤ 1)
+    (hy : M * ‖y - a‖ < ‖f.derivative.eval a‖)
+    (hz : M * ‖z - a‖ < ‖f.derivative.eval a‖)
+    (hfg : ∀ n : ℕ, ‖f.coeff n - g.coeff n‖ ≤ ε)
+    (hsmall : ε < ‖f.derivative.eval a‖)
+    (hgy : g.eval y = 0)
+    (hhz : h.eval z = 0)
+    (hgh : ∀ n : ℕ, ‖g.coeff n - h.coeff n‖ ≤ η) :
+    ‖f.derivative.eval a‖ * ‖y - z‖ ≤ η := by
+  have hz_unit : ‖z‖ ≤ 1 := by
+    have hM : 0 ≤ M := (norm_nonneg (f.coeff 0)).trans (hf 0)
+    have hDM : ‖f.derivative.eval a‖ ≤ M :=
+      norm_eval_le_of_norm_coeff_le
+        (norm_derivative_coeff_le_of_norm_coeff_le hf) ha
+    have hMpos : 0 < M :=
+      (mul_nonneg hM (norm_nonneg (z - a))).trans_lt (hz.trans_le hDM)
+    have hza : ‖z - a‖ < 1 :=
+      (mul_lt_mul_iff_right₀ hMpos).mp
+        (by simpa only [mul_one] using hz.trans_le hDM)
+    simpa only [sub_add_cancel] using
+      (IsUltrametricDist.norm_add_le_max (z - a) a).trans (max_le hza.le ha)
+  have hcoeff : ∀ n : ℕ, ‖(g - h).coeff n‖ ≤ η := by
+    intro n
+    simpa only [coeff_sub] using hgh n
+  calc
+    ‖f.derivative.eval a‖ * ‖y - z‖ = ‖g.eval y - g.eval z‖ :=
+      (norm_eval_sub_eval_eq_of_norm_coeff_sub_le hf ha hy hz hfg hsmall).symm
+    _ = ‖(g - h).eval z‖ := by
+      simp only [eval_sub, hgy, hhz, sub_zero, zero_sub, norm_neg]
+    _ ≤ η := norm_eval_le_of_norm_coeff_le hcoeff hz_unit
+
 /-- Coefficientwise perturbations bound the original derivative norm times the
 root distance when both roots lie in the original strict derivative ball about a
 center in the norm unit ball. -/

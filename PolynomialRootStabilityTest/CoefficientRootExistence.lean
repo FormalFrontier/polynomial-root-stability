@@ -49,7 +49,18 @@ example [Fact (Nat.Prime 3)] :
         ‖f.derivative.eval (1 : Padic 3)‖ * ‖(-2 : Padic 3) - yZero‖ ≤ (0 : ℝ) ∧
         yZero = (-2 : Padic 3) ∧
         ∀ z : Padic 3, f.eval z = 0 →
-          (1 : ℝ) * ‖z - 1‖ < ‖f.derivative.eval (1 : Padic 3)‖ → z = yZero) := by
+          (1 : ℝ) * ‖z - 1‖ < ‖f.derivative.eval (1 : Padic 3)‖ → z = yZero) ∧
+      ‖f.derivative.eval (1 : Padic 3)‖ * ‖yCore - yField‖ ≤ (0 : ℝ) ∧
+      ‖g.eval (5 / 2 : Padic 3) - g.eval (-2 : Padic 3)‖ =
+        ‖f.derivative.eval (1 : Padic 3)‖ * ‖(5 / 2 : Padic 3) - (-2 : Padic 3)‖ ∧
+      g.eval (5 / 2 : Padic 3) - g.eval (-2 : Padic 3) = (9 / 4 : Padic 3) ∧
+      ‖g.eval (5 / 2 : Padic 3) - g.eval (-2 : Padic 3)‖ = (1 / 9 : ℝ) ∧
+      0 < ‖g.eval (5 / 2 : Padic 3) - g.eval (-2 : Padic 3)‖ ∧
+      ‖(5 / 2 : Padic 3) - (-2 : Padic 3)‖ = (1 / 9 : ℝ) ∧
+      0 < ‖(5 / 2 : Padic 3) - (-2 : Padic 3)‖ ∧
+      ‖f.derivative.eval (1 : Padic 3)‖ * ‖yCore - yZero‖ ≤ (1 / 9 : ℝ) ∧
+      ‖f.derivative.eval (1 : Padic 3)‖ * ‖yCore - yZero‖ = (1 / 9 : ℝ) ∧
+      0 < ‖f.derivative.eval (1 : Padic 3)‖ * ‖yCore - yZero‖ := by
   let f : (Padic 3)[X] := X ^ 2 - C 4
   let g : (Padic 3)[X] := X ^ 2 - C (25 / 4)
   have htwo : ‖(2 : Padic 3)‖ = 1 :=
@@ -137,6 +148,17 @@ example [Fact (Nat.Prime 3)] :
       (f := f) (g := g) (M := (1 : ℝ)) (ε := (1 / 9 : ℝ))
       (a := (1 : Padic 3)) (x := (-2 : Padic 3))
       hf ha hx hxstrict hdiff hsmall
+  have hsmallDerivative : (1 / 9 : ℝ) < ‖f.derivative.eval (1 : Padic 3)‖ := by
+    rw [hderivnorm]
+    norm_num
+  have hDirectZero : ‖f.derivative.eval (1 : Padic 3)‖ *
+      ‖yCore - yField‖ ≤ (0 : ℝ) :=
+    Polynomial.norm_derivative_eval_mul_norm_sub_le_of_norm_coeff_sub_le_on_reference_ball
+      (f := f) (g := g) (h := g) (M := (1 : ℝ))
+      (ε := (1 / 9 : ℝ)) (η := (0 : ℝ))
+      (a := (1 : Padic 3)) (y := yCore) (z := yField)
+      hf ha hCoreBall hFieldBall hdiff hsmallDerivative hCoreRoot hFieldRoot
+      (by intro n; simp)
   -- The expected perturbed root and its ball membership are checked only now.
   have hy : g.eval (5 / 2 : Padic 3) = 0 := by norm_num [g]
   have hyoffset : ‖(5 / 2 : Padic 3) - 1‖ = (1 / 3 : ℝ) := by
@@ -146,6 +168,32 @@ example [Fact (Nat.Prime 3)] :
   have hystrict : (1 : ℝ) * ‖(5 / 2 : Padic 3) - 1‖ <
       ‖f.derivative.eval (1 : Padic 3)‖ := by
     rw [one_mul, hyoffset, hderivnorm]
+    norm_num
+  have hScaling : ‖g.eval (5 / 2 : Padic 3) - g.eval (-2 : Padic 3)‖ =
+      ‖f.derivative.eval (1 : Padic 3)‖ * ‖(5 / 2 : Padic 3) - (-2 : Padic 3)‖ :=
+    Polynomial.norm_eval_sub_eval_eq_of_norm_coeff_sub_le
+      (f := f) (g := g) (M := (1 : ℝ)) (ε := (1 / 9 : ℝ))
+      (a := (1 : Padic 3)) (y := (5 / 2 : Padic 3)) (z := (-2 : Padic 3))
+      hf ha hystrict hxstrict hdiff hsmallDerivative
+  -- The function difference and its positive norm are computed independently of scaling.
+  have hgAtOriginal : g.eval (-2 : Padic 3) = -(9 / 4 : Padic 3) := by
+    norm_num [g]
+  have hFunctionDifference :
+      g.eval (5 / 2 : Padic 3) - g.eval (-2 : Padic 3) = (9 / 4 : Padic 3) := by
+    rw [hy, hgAtOriginal]
+    ring
+  have hFunctionNorm :
+      ‖g.eval (5 / 2 : Padic 3) - g.eval (-2 : Padic 3)‖ = (1 / 9 : ℝ) := by
+    rw [hFunctionDifference]
+    exact h94
+  have hFunctionPositive : 0 < ‖g.eval (5 / 2 : Padic 3) - g.eval (-2 : Padic 3)‖ := by
+    rw [hFunctionNorm]
+    norm_num
+  have hDisplacementNorm : ‖(5 / 2 : Padic 3) - (-2 : Padic 3)‖ = (1 / 9 : ℝ) := by
+    rw [norm_sub_rev]
+    exact hdist
+  have hDisplacementPositive : 0 < ‖(5 / 2 : Padic 3) - (-2 : Padic 3)‖ := by
+    rw [hDisplacementNorm]
     norm_num
   have hCoreExpected : yCore = (5 / 2 : Padic 3) :=
     (hCoreUnique (5 / 2 : Padic 3) hy hystrict).symm
@@ -171,15 +219,37 @@ example [Fact (Nat.Prime 3)] :
       (f := f) (g := f) (M := (1 : ℝ)) (ε := (0 : ℝ))
       (a := (1 : Padic 3)) (x := (-2 : Padic 3))
       hf ha hx hxstrict hdiffZero hsmallZero
+  have hDirectPositive : ‖f.derivative.eval (1 : Padic 3)‖ *
+      ‖yCore - yZero‖ ≤ (1 / 9 : ℝ) :=
+    Polynomial.norm_derivative_eval_mul_norm_sub_le_of_norm_coeff_sub_le_on_reference_ball
+      (f := f) (g := g) (h := f) (M := (1 : ℝ))
+      (ε := (1 / 9 : ℝ)) (η := (1 / 9 : ℝ))
+      (a := (1 : Padic 3)) (y := yCore) (z := yZero)
+      hf ha hCoreBall hZeroBall hdiff hsmallDerivative hCoreRoot hZeroRoot
+      (by
+        intro n
+        rw [norm_sub_rev]
+        exact hdiff n)
   have hzeroDist : ‖(-2 : Padic 3) - yZero‖ = 0 := by
     apply le_antisymm
     · simpa only [hderivnorm, one_mul] using hZeroBound
     · exact norm_nonneg _
   have hZeroExpected : yZero = (-2 : Padic 3) :=
     (sub_eq_zero.mp (norm_eq_zero.mp hzeroDist)).symm
+  have hDirectTight : ‖f.derivative.eval (1 : Padic 3)‖ *
+      ‖yCore - yZero‖ = (1 / 9 : ℝ) := by
+    rw [hCoreExpected, hZeroExpected, hderivnorm, one_mul, norm_sub_rev]
+    exact hdist
+  have hDirectStrictlyPositive : 0 < ‖f.derivative.eval (1 : Padic 3)‖ *
+      ‖yCore - yZero‖ := by
+    rw [hDirectTight]
+    norm_num
   exact ⟨yCore, yField, yZero,
     ⟨hCoreRoot, hCoreBall, hCoreBound, hCoreExpected, hCoreTight,
       hCorePositive, hCoreUnique⟩,
     ⟨hFieldRoot, hFieldBall, hFieldBound, hFieldExpected, hFieldTight,
       hFieldPositive, hFieldUnique⟩,
-    hSame, ⟨hZeroRoot, hZeroBall, hZeroBound, hZeroExpected, hZeroUnique⟩⟩
+    hSame, ⟨hZeroRoot, hZeroBall, hZeroBound, hZeroExpected, hZeroUnique⟩,
+    hDirectZero, hScaling, hFunctionDifference, hFunctionNorm, hFunctionPositive,
+    hDisplacementNorm, hDisplacementPositive, hDirectPositive, hDirectTight,
+    hDirectStrictlyPositive⟩
