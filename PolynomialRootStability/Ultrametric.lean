@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Tactic.Ring
+public import PolynomialRootStability.Valuation
 
 /-!
 # Polynomial estimates in ultrametric seminormed rings
@@ -174,35 +175,33 @@ theorem norm_eval_sub_eq_of_mul_norm_sub_lt_norm_derivative
     (hf : ∀ n : ℕ, ‖f.coeff n‖ ≤ M) (ha : ‖a‖ ≤ 1)
     (hba : M * ‖b - a‖ < ‖f.derivative.eval a‖) :
     ‖f.eval b - f.eval a‖ = ‖f.derivative.eval a‖ * ‖b - a‖ := by
-  have hM : 0 ≤ M := (norm_nonneg (f.coeff 0)).trans (hf 0)
-  have hd : ‖f.derivative.eval a‖ ≤ M :=
-    norm_eval_le_of_norm_coeff_le
-      (norm_derivative_coeff_le_of_norm_coeff_le hf) ha
-  have hdist : ‖b - a‖ < 1 :=
-    lt_of_mul_lt_mul_left
-      (by simpa only [mul_one] using hba.trans_le hd) hM
-  have hb : ‖b‖ ≤ 1 := by
-    simpa only [sub_add_cancel] using
-      (IsUltrametricDist.norm_add_le_max (b - a) a).trans (max_le hdist.le ha)
-  by_cases hzero : ‖b - a‖ = 0
-  · have hbound := norm_eval_sub_le_of_norm_coeff_le hf hb ha
-    rw [hzero, mul_zero] at hbound ⊢
-    exact le_antisymm hbound (norm_nonneg _)
-  · have hpos : 0 < ‖b - a‖ :=
-      (lt_or_eq_of_le (norm_nonneg (b - a))).resolve_right (Ne.symm hzero)
-    have hlt : M * ‖b - a‖ ^ 2 < ‖f.derivative.eval a‖ * ‖b - a‖ := by
-      simpa only [pow_two, mul_assoc] using mul_lt_mul_of_pos_right hba hpos
-    have hrem : ‖f.eval b - f.eval a - f.derivative.eval a * (b - a)‖ <
-        ‖f.derivative.eval a * (b - a)‖ := by
-      rw [norm_mul]
-      exact (norm_eval_sub_sub_derivative_mul_le_of_norm_coeff_le hf hb ha).trans_lt hlt
-    have hnorm := IsUltrametricDist.norm_eq_of_add_norm_lt_max
-      (x := f.eval b - f.eval a) (y := -(f.derivative.eval a * (b - a)))
-      (by
-        simpa only [sub_eq_add_neg, norm_neg] using
-          hrem.trans_le (le_max_right ‖f.eval b - f.eval a‖
-            ‖f.derivative.eval a * (b - a)‖))
-    simpa only [norm_neg, norm_mul] using hnorm
+  have hsq : ‖(1 : R)‖ ^ 2 = ‖(1 : R)‖ := by
+    rw [pow_two, ← norm_mul, one_mul]
+  rcases eq_zero_or_one_of_sq_eq_self hsq with hzero | hone
+  · have hz (x : R) : ‖x‖ = 0 := by
+      simpa only [one_mul, hzero, zero_mul] using (norm_mul (1 : R) x)
+    have hlt : (0 : ℝ) < 0 := by
+      simpa only [hz, mul_zero] using hba
+    exact (lt_irrefl 0 hlt).elim
+  · let : NormOneClass R := ⟨hone⟩
+    have hM : 0 ≤ M := (norm_nonneg (f.coeff 0)).trans (hf 0)
+    let M₀ : NNReal := ⟨M, hM⟩
+    let v : Valuation R NNReal :=
+      Valuation.mk (nnnormHom : R →*₀ NNReal)
+        (fun x y => IsUltrametricDist.nnnorm_add_le_max x y)
+    have hv (x : R) : (v x : ℝ) = ‖x‖ := by
+      change ((nnnormHom : R →*₀ NNReal) x : ℝ) = ‖x‖
+      rfl
+    have hM₀ : (M₀ : ℝ) = M := rfl
+    have hf₀ : ∀ n : ℕ, 0 < n → v (f.coeff n) ≤ M₀ :=
+      fun n _ => NNReal.coe_le_coe.mp (hf n)
+    have ha₀ : v a ≤ 1 := NNReal.coe_le_coe.mp ha
+    have hba₀ : M₀ * v (b - a) < v (f.derivative.eval a) := by
+      apply NNReal.coe_lt_coe.mp
+      simpa only [NNReal.coe_mul, hv, hM₀] using hba
+    have hvalue := v.map_eval_sub_eq_of_mul_map_sub_lt_map_derivative hf₀ ha₀ hba₀
+    simpa only [NNReal.coe_mul, hv] using
+      congrArg (fun t : NNReal => (t : ℝ)) hvalue
 
 universe u
 
@@ -215,42 +214,35 @@ theorem norm_eval_sub_eval_eq_of_mul_norm_sub_lt_norm_derivative
     (hb : M * ‖b - a‖ < ‖f.derivative.eval a‖)
     (hc : M * ‖c - a‖ < ‖f.derivative.eval a‖) :
     ‖f.eval c - f.eval b‖ = ‖f.derivative.eval a‖ * ‖c - b‖ := by
-  have hM : 0 ≤ M := (norm_nonneg (f.coeff 0)).trans (hf 0)
-  have hf' : ∀ n : ℕ, ‖f.derivative.coeff n‖ ≤ M :=
-    norm_derivative_coeff_le_of_norm_coeff_le hf
-  have hd : ‖f.derivative.eval a‖ ≤ M :=
-    norm_eval_le_of_norm_coeff_le hf' ha
-  have hdist : ‖b - a‖ < 1 :=
-    lt_of_mul_lt_mul_left
-      (by simpa only [mul_one] using hb.trans_le hd) hM
-  have hb_unit : ‖b‖ ≤ 1 := by
-    simpa only [sub_add_cancel] using
-      (IsUltrametricDist.norm_add_le_max (b - a) a).trans (max_le hdist.le ha)
-  have hD : ‖f.derivative.eval b - f.derivative.eval a‖ <
-      ‖f.derivative.eval a‖ :=
-    (norm_eval_sub_le_of_norm_coeff_le hf' hb_unit ha).trans_lt hb
-  have hDb : ‖f.derivative.eval b‖ = ‖f.derivative.eval a‖ := by
-    have hnorm := IsUltrametricDist.norm_eq_of_add_norm_lt_max
-      (x := f.derivative.eval b) (y := -(f.derivative.eval a))
-      (by
-        simpa only [sub_eq_add_neg, norm_neg] using
-          hD.trans_le (le_max_right ‖f.derivative.eval b‖ ‖f.derivative.eval a‖))
-    simpa only [norm_neg] using hnorm
-  have hcb_le : ‖c - b‖ ≤ max ‖c - a‖ ‖b - a‖ := by
-    calc
-      ‖c - b‖ = ‖(c - a) + -(b - a)‖ := by
-        congr 1
-        ring
-      _ ≤ max ‖c - a‖ ‖-(b - a)‖ :=
-        IsUltrametricDist.norm_add_le_max _ _
-      _ = max ‖c - a‖ ‖b - a‖ := by rw [norm_neg]
-  have hcb : M * ‖c - b‖ < ‖f.derivative.eval a‖ := by
-    refine (mul_le_mul_of_nonneg_left hcb_le hM).trans_lt ?_
-    rcases le_total ‖c - a‖ ‖b - a‖ with h | h
-    · simpa only [max_eq_right h] using hb
-    · simpa only [max_eq_left h] using hc
-  have hscale := norm_eval_sub_eq_of_mul_norm_sub_lt_norm_derivative
-    (a := b) (b := c) hf hb_unit (by simpa only [hDb] using hcb)
-  simpa only [hDb] using hscale
+  have hsq : ‖(1 : R)‖ ^ 2 = ‖(1 : R)‖ := by
+    rw [pow_two, ← norm_mul, one_mul]
+  rcases eq_zero_or_one_of_sq_eq_self hsq with hzero | hone
+  · have hz (x : R) : ‖x‖ = 0 := by
+      simpa only [one_mul, hzero, zero_mul] using (norm_mul (1 : R) x)
+    have hlt : (0 : ℝ) < 0 := by
+      simpa only [hz, mul_zero] using hb
+    exact (lt_irrefl 0 hlt).elim
+  · let : NormOneClass R := ⟨hone⟩
+    have hM : 0 ≤ M := (norm_nonneg (f.coeff 0)).trans (hf 0)
+    let M₀ : NNReal := ⟨M, hM⟩
+    let v : Valuation R NNReal :=
+      Valuation.mk (nnnormHom : R →*₀ NNReal)
+        (fun x y => IsUltrametricDist.nnnorm_add_le_max x y)
+    have hv (x : R) : (v x : ℝ) = ‖x‖ := by
+      change ((nnnormHom : R →*₀ NNReal) x : ℝ) = ‖x‖
+      rfl
+    have hM₀ : (M₀ : ℝ) = M := rfl
+    have hf₀ : ∀ n : ℕ, 0 < n → v (f.coeff n) ≤ M₀ :=
+      fun n _ => NNReal.coe_le_coe.mp (hf n)
+    have ha₀ : v a ≤ 1 := NNReal.coe_le_coe.mp ha
+    have hb₀ : M₀ * v (b - a) < v (f.derivative.eval a) := by
+      apply NNReal.coe_lt_coe.mp
+      simpa only [NNReal.coe_mul, hv, hM₀] using hb
+    have hc₀ : M₀ * v (c - a) < v (f.derivative.eval a) := by
+      apply NNReal.coe_lt_coe.mp
+      simpa only [NNReal.coe_mul, hv, hM₀] using hc
+    have hvalue := v.map_eval_sub_eval_eq_of_mul_map_sub_lt_map_derivative hf₀ ha₀ hb₀ hc₀
+    simpa only [NNReal.coe_mul, hv] using
+      congrArg (fun t : NNReal => (t : ℝ)) hvalue
 
 end Polynomial

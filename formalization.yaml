@@ -7,7 +7,9 @@ project:
     inside a common Krasner normed extension, including monic, normalized,
     and ordinary-coefficient versions with derived nearby separability, plus
     quantitative Newton lifting with convergence and resultant-controlled
-    factorization over complete ultrametric normed fields.
+    factorization over complete ultrametric normed fields, together with
+    polynomial estimates for valuations in linearly ordered commutative
+    value monoids with zero.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -55,7 +57,11 @@ status:
     quantitative Newton lifting theorem for integral polynomials
     over complete ultrametric normed fields, and resultant-controlled
     two-factor lifting with degree and leading-coefficient preservation and
-    quantitative correction bounds; no higher-rank valuation claim.
+    quantitative correction bounds. Generic value-monoid estimates give
+    anchored and two-point polynomial scaling and derivative-value constancy
+    over commutative rings, with injectivity only for valuations of zero support;
+    no arbitrary-rank root-existence theorem is asserted. Newton lifting
+    retains its complete ultrametric normed-field hypotheses.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms:
@@ -73,6 +79,23 @@ status:
       axioms: [propext, Classical.choice, Quot.sound]
     - declaration: IsKrasner.exists_pos_adjoin_rootSet_eq_of_separable
       file: PolynomialRootStability/Normalization.lean
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+
+    - declaration: Valuation.map_eval_sub_eq_of_mul_map_sub_lt_map_derivative
+      file: PolynomialRootStability/Valuation.lean
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+    - declaration: Valuation.map_derivative_eval_eq_of_mul_map_sub_lt_map_derivative
+      file: PolynomialRootStability/Valuation.lean
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+    - declaration: Valuation.map_eval_sub_eval_eq_of_mul_map_sub_lt_map_derivative
+      file: PolynomialRootStability/Valuation.lean
+      sorry_count: 0
+      axioms: [propext, Classical.choice, Quot.sound]
+    - declaration: Valuation.injOn_eval_of_mul_map_sub_lt_map_derivative
+      file: PolynomialRootStability/Valuation.lean
       sorry_count: 0
       axioms: [propext, Classical.choice, Quot.sound]
 
@@ -107,7 +130,10 @@ fidelity:
     field norm, expresses integrality through coefficient bounds, and uses a
     strict WithBot error-degree bound for the degree and exact-leading-coefficient
     constraint. It preserves both leading coefficients and includes zero and
-    constant degree conventions left implicit in the source.
+    constant degree conventions left implicit in the source. The value-monoid
+    estimates require only positive-index coefficient bounds and a unit-ball
+    anchor; the constant coefficient is unrestricted. Their value identities
+    do not require separation, and injectivity separately assumes zero support.
 
 review:
   status: pending
@@ -118,3 +144,6 @@ acknowledgements: >-
   quantitative lifting also uses its Banach fixed point and ultrametric norm APIs
   and is inspired by its p-adic hensels_lemma. Factor lifting reuses its Sylvester
   map, adjugate, finite coefficient representations and polynomial sup norm.
+  Generic value-monoid estimates reuse Mathlib's valuation and finite-sum bounds,
+  polynomial Taylor, Hasse derivative and divX interfaces, and geometric-sum API;
+  their formalization is authored collectively by Formal Frontier Agents.

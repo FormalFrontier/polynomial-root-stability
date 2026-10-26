@@ -11,6 +11,7 @@ public import PolynomialRootStability.Newton
 public import PolynomialRootStability.RootUniqueness
 public import PolynomialRootStability.ResultantFactorization
 public import PolynomialRootStability.Ultrametric
+public import PolynomialRootStability.Valuation
 
 /-!
 # Polynomial root stability
@@ -27,5 +28,8 @@ coefficient neighbourhood.
 The Newton module additionally proves quantitative root lifting and convergence
 of Mathlib's polynomial Newton iterates in a complete ultrametric normed field.
 The ultrametric module provides coefficient-controlled evaluation, derivative,
-Lipschitz and Taylor estimates on the norm unit ball.
+Lipschitz and Taylor estimates on the norm unit ball. The valuation module gives
+coefficient-controlled value scaling, derivative-value stability and injectivity
+on strict derivative balls over commutative rings, with values in any linearly
+ordered commutative monoid with zero.
 -/

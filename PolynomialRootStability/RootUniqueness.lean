@@ -32,17 +32,40 @@ theorem injOn_eval_of_mul_norm_sub_lt_norm_derivative
     (hf : ∀ n : ℕ, ‖f.coeff n‖ ≤ M) (ha : ‖a‖ ≤ 1) :
     Set.InjOn (fun b : R => f.eval b)
       {b : R | M * ‖b - a‖ < ‖f.derivative.eval a‖} := by
-  intro b hb c hc heval
-  change f.eval b = f.eval c at heval
-  have hM : 0 ≤ M := (norm_nonneg (f.coeff 0)).trans (hf 0)
-  have hdpos : 0 < ‖f.derivative.eval a‖ :=
-    (mul_nonneg hM (norm_nonneg (b - a))).trans_lt hb
-  have hnorm := norm_eval_sub_eval_eq_of_mul_norm_sub_lt_norm_derivative
-    (a := a) (b := b) (c := c) hf ha hb hc
-  rw [heval, sub_self, norm_zero] at hnorm
-  have hdist : ‖c - b‖ = 0 :=
-    (mul_eq_zero.mp hnorm.symm).resolve_left (ne_of_gt hdpos)
-  exact (sub_eq_zero.mp (norm_eq_zero.mp hdist)).symm
+  have hsq : ‖(1 : R)‖ ^ 2 = ‖(1 : R)‖ := by
+    rw [pow_two, ← norm_mul, one_mul]
+  rcases eq_zero_or_one_of_sq_eq_self hsq with hzero | hone
+  · have hz (x : R) : ‖x‖ = 0 := by
+      simpa only [one_mul, hzero, zero_mul] using (norm_mul (1 : R) x)
+    intro b hb
+    change M * ‖b - a‖ < ‖f.derivative.eval a‖ at hb
+    have hlt : (0 : ℝ) < 0 := by
+      simpa only [hz, mul_zero] using hb
+    exact (lt_irrefl 0 hlt).elim
+  · let : NormOneClass R := ⟨hone⟩
+    have hM : 0 ≤ M := (norm_nonneg (f.coeff 0)).trans (hf 0)
+    let M₀ : NNReal := ⟨M, hM⟩
+    let v : Valuation R NNReal :=
+      Valuation.mk (nnnormHom : R →*₀ NNReal)
+        (fun x y => IsUltrametricDist.nnnorm_add_le_max x y)
+    have hv (x : R) : (v x : ℝ) = ‖x‖ := by
+      change ((nnnormHom : R →*₀ NNReal) x : ℝ) = ‖x‖
+      rfl
+    have hM₀ : (M₀ : ℝ) = M := rfl
+    have hf₀ : ∀ n : ℕ, 0 < n → v (f.coeff n) ≤ M₀ :=
+      fun n _ => NNReal.coe_le_coe.mp (hf n)
+    have ha₀ : v a ≤ 1 := NNReal.coe_le_coe.mp ha
+    have hsep : v.supp = ⊥ := by
+      ext x
+      simp only [Valuation.mem_supp_iff, Ideal.mem_bot]
+      change ‖x‖₊ = 0 ↔ x = 0
+      exact nnnorm_eq_zero
+    intro b hb c hc heval
+    refine v.injOn_eval_of_mul_map_sub_lt_map_derivative hsep hf₀ ha₀ ?_ ?_ heval
+    · apply NNReal.coe_lt_coe.mp
+      simpa only [Set.mem_ofPred_eq, NNReal.coe_mul, hv, hM₀] using hb
+    · apply NNReal.coe_lt_coe.mp
+      simpa only [Set.mem_ofPred_eq, NNReal.coe_mul, hv, hM₀] using hc
 
 /-- A root in the norm unit ball is the only root at distance strictly less
 than its derivative norm divided by a uniform coefficient bound, expressed
