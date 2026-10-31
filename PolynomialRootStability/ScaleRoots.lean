@@ -30,8 +30,9 @@ motivated by the reference below, not an exterior homotopy or a root-count theor
   Tuma, supplies the root-scaling operation and its algebraic identities.
 * Mathlib's `Mathlib.Topology.Algebra.Polynomial`, by Robert Y. Lewis, supplies
   polynomial evaluation and topology support.
-* J. P. May, *A Concise Course in Algebraic Topology*, printed p. 11 / PDF p. 19,
-  Problem 1, motivates polynomial root scaling on the unit boundary.
+* J. P. May, *A Concise Course in Algebraic Topology*, Chapter 1, §7, proof of the
+  fundamental theorem of algebra, printed p. 11 / PDF p. 19, motivates polynomial
+  root scaling on the unit boundary.
 -/
 
 @[expose] public section

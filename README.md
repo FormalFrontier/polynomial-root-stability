@@ -254,30 +254,23 @@ splitting-field objects. This library does not provide separate real/complex
 variants, arbitrary variable-degree families, nonseparable-reference stability,
 or a claim of complete formalization of its motivating mathematical source.
 
-## Build and check
+## Using the library
 
-From the repository root, install the exact toolchain from `lean-toolchain`
-(Lean `v4.34.0-rc2`), with mathlib pinned by `lakefile.toml` and the exact
-resolved nine-package graph in `lake-manifest.json`:
+Add it to your `lakefile.toml`:
 
-```sh
-elan toolchain install "$(cat lean-toolchain)"
-lake exe cache get
-LEAN_NUM_THREADS=2 lake --wfail build
+```toml
+[[require]]
+name = "polynomial-root-stability"
+git = "https://github.com/FormalFrontier/polynomial-root-stability.git"
+rev = "main"
 ```
 
-The default build compiles the production modules, the root reexport and
-the **separate** `PolynomialRootStabilityTest` library with explicit Krasner,
-Normalization, Newton, NewtonContracts, PadicHensel and ResultantFactorization roots.
-It does not import tests into the production root. Warning-fatal compilation and
-axiom auditing are distinct checks; the build command alone is not a
-full-axiom-audit result. The direct Krasner/Normalization targets remain available.
-Always fetch the matching precompiled mathlib cache before building; after
-changing dependency pins or replacing `.lake`, fetch it again.
-`LEAN_NUM_THREADS=2` configures Lean's runtime; it is not a limit on total
-processes or memory. Build time depends on the available cache and hardware.
-
-Optional API documentation tooling is not required for ordinary library use.
+GitHub `main` contains reviewed releases. Lake resolves the latest release when
+this dependency is first added or updated; `lake-manifest.json` locks the resolved
+commit until the next update. To pin a particular release, replace `main` with a
+full commit from that history. Libraries used together must share a compatible
+Mathlib revision and toolchain; see [build and check](#build-and-check) for this
+checkout's pinned environment.
 
 For example, the named checked client
 `PolynomialRootStabilityTest.aggregate_ordinary_stability` in
@@ -312,6 +305,31 @@ The root-field 2-adic test clients choose `K = L = ℚ_[2]`. They check constant
 nonmonic degree-one specializations; they **do not** test nontrivial ambient
 field extensions. Direct and aggregate imports both have named checked
 clients; none assumes the desired field equality as a hypothesis.
+
+## Build and check
+
+From the repository root, install the exact toolchain from `lean-toolchain`
+(Lean `v4.34.0-rc2`), with mathlib pinned by `lakefile.toml` and the exact
+resolved nine-package graph in `lake-manifest.json`:
+
+```sh
+elan toolchain install "$(cat lean-toolchain)"
+lake exe cache get
+LEAN_NUM_THREADS=2 lake --wfail build
+```
+
+The default build compiles the production modules, the root reexport and
+the **separate** `PolynomialRootStabilityTest` library with explicit Krasner,
+Normalization, Newton, NewtonContracts, PadicHensel and ResultantFactorization roots.
+It does not import tests into the production root. Warning-fatal compilation and
+axiom auditing are distinct checks; the build command alone is not a
+full-axiom-audit result. The direct Krasner/Normalization targets remain available.
+Always fetch the matching precompiled mathlib cache before building; after
+changing dependency pins or replacing `.lake`, fetch it again.
+`LEAN_NUM_THREADS=2` configures Lean's runtime; it is not a limit on total
+processes or memory. Build time depends on the available cache and hardware.
+
+Optional API documentation tooling is not required for ordinary library use.
 
 ## Sources and credit
 
@@ -349,8 +367,8 @@ normed fields in place of the source's complete discretely valued field and make
 the zero/constant degree conventions explicit.
 
 The [root-scaling results](PolynomialRootStability/ScaleRoots.lean) are motivated
-by J. P. May, *A Concise Course in Algebraic Topology*, printed p. 11 / PDF p. 19,
-Problem 1. They generalize the unit-boundary scaling prerequisites to topological
+by J. P. May, *A Concise Course in Algebraic Topology*, Chapter 1, §7,
+proof of the fundamental theorem of algebra, printed p. 11 / PDF p. 19. They generalize the unit-boundary scaling prerequisites to topological
 semirings and normed fields; they do not establish the exterior homotopy or the
 degree/root-count theorem. The proofs reuse Mathlib's `Polynomial.scaleRoots`
 and algebraic identities by Anne Baanen and Devon Tuma, together with Mathlib's
