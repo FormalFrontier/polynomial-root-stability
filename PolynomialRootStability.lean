@@ -10,6 +10,7 @@ public import PolynomialRootStability.Normalization
 public import PolynomialRootStability.Newton
 public import PolynomialRootStability.RootUniqueness
 public import PolynomialRootStability.ResultantFactorization
+public import PolynomialRootStability.ScaleRoots
 public import PolynomialRootStability.Ultrametric
 public import PolynomialRootStability.Valuation
 
@@ -32,4 +33,8 @@ Lipschitz and Taylor estimates on the norm unit ball. The valuation module gives
 coefficient-controlled value scaling, derivative-value stability and injectivity
 on strict derivative balls over commutative rings, with values in any linearly
 ordered commutative monoid with zero.
+
+The root-scaling module proves joint continuity of scaled evaluation over a
+topological semiring and scale-relative nonvanishing over any normed field for
+polynomials with no zero of norm at least one.
 -/

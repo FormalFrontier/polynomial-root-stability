@@ -38,6 +38,24 @@ normalization to obtain the stated local-constancy interfaces. See the
 [historical root-field API reference](docs/README.md) and the
 [generic checked-use clients](PolynomialRootStabilityTest/Normalization.lean).
 
+### Polynomial root scaling
+
+For a fixed polynomial `p : R[X]` over a topological semiring `R`, evaluation
+of Mathlib's root-scaling operation is jointly continuous by
+[`Polynomial.continuous_eval_scaleRoots`](PolynomialRootStability/ScaleRoots.lean):
+`(t, z) ↦ (p.scaleRoots t).eval z`. The polynomial is fixed; no continuity
+across changes of degree is asserted, and multiplication need not be commutative.
+
+Over any normed field `K`, suppose `p : K[X]` satisfies
+`∀ w, 1 ≤ ‖w‖ → p.eval w ≠ 0`. If `‖t‖ ≤ ‖z‖` and `z ≠ 0`, then
+[`Polynomial.scaleRoots_eval_ne_zero_of_norm_le`](PolynomialRootStability/ScaleRoots.lean)
+gives `(p.scaleRoots t).eval z ≠ 0`. In particular this applies when `‖t‖ ≤ 1`
+and `‖z‖ = 1`. The outside condition holds for `X` over every normed field
+and for `X - C (1/2)` over `ℂ`; it implies `p ≠ 0` by evaluation at `1`.
+At parameter zero the scaled polynomial is `p.leadingCoeff • X ^ p.natDegree`,
+so nonzero constants are included without a positive-degree hypothesis.
+No completeness, algebraic-closure or nontrivial-norm assumption is needed.
+
 ### Polynomial scaling in valuation balls
 
 Let `R : Type u` be a commutative ring and `Γ₀ : Type w` a
@@ -203,13 +221,14 @@ integer ring, not in the field.
 | --- | --- |
 | `PolynomialRootStability.Krasner` | `IsKrasner.exists_pos_adjoin_rootSet_eq_of_monic_separable` gives monic local equality and nearby separability; `IsKrasner.exists_pos_adjoin_rootSet_le_of_monic_separable` gives a one-sided inclusion without requiring comparison separability. Supporting lemmas give finite positive root/conjugate separation, quantitative coefficient radii, conditional inclusion, nearby separability and equality. |
 | `PolynomialRootStability.Normalization` | `IsKrasner.exists_pos_adjoin_rootSet_eq_of_separable_normalized` measures closeness *after* dividing each nonzero polynomial by its leading coefficient; `Polynomial.exists_pos_norm_mul_leadingCoeff_inv_coeff_sub_lt` derives normalized closeness and comparison nonzeroness from ordinary coefficient closeness. `IsKrasner.exists_pos_adjoin_rootSet_eq_of_separable` combines these into ordinary-coefficient stability of any nonzero separable reference. |
+| `PolynomialRootStability.ScaleRoots` | `Polynomial.continuous_eval_scaleRoots` gives joint continuity over a topological semiring; `Polynomial.scaleRoots_eval_ne_zero_of_norm_le` gives nonvanishing when `‖t‖ ≤ ‖z‖` and `z ≠ 0` over any normed field, assuming no zero of norm at least one. |
 | `PolynomialRootStability.Valuation` | Positive-index coefficient bounds give anchored and two-point evaluation scaling and derivative-value constancy in strict valuation balls over commutative rings with values in a `LinearOrderedCommMonoidWithZero`; zero support gives `Set.InjOn`. These estimates underlie the norm scaling and injectivity interfaces. |
 | `PolynomialRootStability.Ultrametric` | Uniform coefficient bounds control derivative coefficients, evaluation and differences on the norm unit ball in ultrametric seminormed rings; a first-order Taylor remainder has a quadratic bound in ultrametric seminormed commutative rings. No completeness or norm-one hypothesis is needed. |
 | `PolynomialRootStability.Newton` | `Polynomial.newtonMap_apply_eq_sub_div` proves the field quotient formula. `Polynomial.exists_root_tendsto_iterate_newtonMap` proves quantitative lifting, exact distance, derivative-norm stability, convergence, nonzero denominators and open-ball uniqueness. |
 | `PolynomialRootStability.ResultantFactorization.Algebra` | Ultrametric determinant and adjugate bounds, resultant and Sylvester-adjugate coefficient bounds, and inverse composition identities. |
 | `PolynomialRootStability.ResultantFactorization.Coordinates` | Finite coefficient/sup-norm identities, including empty vectors, and ultrametric sup-norm sum, difference and product bounds. The Gauss-norm product bound allows nonarchimedean, nonnegative, zero-preserving submultiplicative coefficient functions. |
 | `PolynomialRootStability.ResultantFactorization` | `Polynomial.exists_factorization_of_supNorm_lt_resultant_sq` gives bounded-degree quantitative factor lifting with degree and leading-coefficient preservation. |
-| `PolynomialRootStability` | Publicly reexports the stability, ultrametric, Newton and resultant-factorization APIs; test leaves are separate. |
+| `PolynomialRootStability` | Publicly reexports the stability, root-scaling, ultrametric, Newton and resultant-factorization APIs; test leaves are separate. |
 
 The [historical root-field API snapshot](docs/README.md) gives the native displayed
 signatures, docstrings and source links for the existing 14 Krasner/Normalization
@@ -328,6 +347,15 @@ adjugate, coefficient sup norm and finite coefficient representations, together
 with its Banach fixed-point theorem. It allows arbitrary complete ultrametric
 normed fields in place of the source's complete discretely valued field and makes
 the zero/constant degree conventions explicit.
+
+The [root-scaling results](PolynomialRootStability/ScaleRoots.lean) are motivated
+by J. P. May, *A Concise Course in Algebraic Topology*, printed p. 11 / PDF p. 19,
+Problem 1. They generalize the unit-boundary scaling prerequisites to topological
+semirings and normed fields; they do not establish the exterior homotopy or the
+degree/root-count theorem. The proofs reuse Mathlib's `Polynomial.scaleRoots`
+and algebraic identities by Anne Baanen and Devon Tuma, together with Mathlib's
+polynomial topology support by Robert Y. Lewis. No replacement scaling family
+or upstream proof is copied.
 
 The collective author credit does not assert copyright ownership. No source
 PDFs or source-research assets are bundled in this repository. This library's
